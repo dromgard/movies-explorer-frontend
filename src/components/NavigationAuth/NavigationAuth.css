@@ -1,0 +1,32 @@
+.navigation-auth__list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.navigation-auth__link {
+  margin: 0;
+  padding: 8px 20px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: opacity 0.3s linear;
+}
+
+.navigation-auth__link_login {
+  color: #000000;
+  background: #2be080;
+}
+
+.navigation-auth__link:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}

@@ -1,0 +1,9 @@
+@import url("../src/vendor/normalize.css");
+
+@import url("../src/vendor/fonts.css");
+
+@import url("../src/components/Header/Header.css");
+
+@import url("../src/components/NavigationAuth/NavigationAuth.css");
+
+@import url("../src/components/Navigation/Navigation.css");
