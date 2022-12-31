@@ -1,0 +1,20 @@
+.promo {
+  margin: 0;
+  padding: 50px 0 0 70px;
+  min-height: 560px;
+  background: no-repeat 488px 256px url(../../images/promo-bg.svg) #5c5c5c;
+  box-sizing: border-box;
+}
+
+.promo__title {
+  margin: 0;
+  padding: 0;
+  max-width: 626px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 52px;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+}
