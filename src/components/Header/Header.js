@@ -6,7 +6,7 @@ import NavigationAuth from "../NavigationAuth/NavigationAuth";
 function Header() {
   return (
     <header className="header">
-      <Link className="header__logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
+      <Link className="button header__logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
       <NavigationAuth />
     </header>
   );

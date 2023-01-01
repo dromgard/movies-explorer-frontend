@@ -16,17 +16,10 @@
   font-size: 12px;
   line-height: 16px;
   color: #ffffff;
-  text-decoration: none;
   border-radius: 3px;
-  transition: opacity 0.3s linear;
 }
 
 .navigation-auth__link_login {
   color: #000000;
   background: #2be080;
-}
-
-.navigation-auth__link:hover {
-  cursor: pointer;
-  opacity: 0.7;
 }
