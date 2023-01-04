@@ -23,6 +23,7 @@
 }
 
 .button {
+  border: 0;
   transition: opacity 0.3s linear;
   text-decoration: none;
 }
@@ -60,4 +61,12 @@
 .section-text_techs {
   margin: 0 auto;
   max-width: 460px;
+}
+
+.input {
+  border: 0;
+}
+
+.checkbox:hover {
+  cursor: pointer;
 }

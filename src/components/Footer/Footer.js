@@ -9,7 +9,7 @@ function Footer() {
         <p className="footer__text">&copy; {new Date().getFullYear()}</p>
         <div className="footer__info">
           <p className="footer__text">Яндекс.Практикум</p>
-          <Link className="footer__text link">Github</Link>
+          <Link className="footer__text link" target="_blank">Github</Link>
         </div>
       </div>
     </footer>

@@ -1,8 +1,21 @@
 import React from "react";
+import MoviesCardList from "../MoviesCardList/MoviesCardList";
+import SearchForm from "../SearchForm/SearchForm";
 
 function Movies() {
   return (
-    <h2>Movies</h2>
+    <>
+      <SearchForm />
+      <MoviesCardList />
+      <section className="more-movies">
+        <button
+          className="more-movies-button button"
+          type="button"
+          aria-label="Показать больше фильмов"
+        // onClick={}
+        >Ещё</button>
+      </section>
+    </>
   );
 }
 

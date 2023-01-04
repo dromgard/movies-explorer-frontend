@@ -1,0 +1,9 @@
+.moviescardlist {
+  margin: auto;
+  padding: 70px 70px 30px;
+  display: grid;
+  justify-content: center;
+  gap: 32px 20px;
+  grid-template-columns: repeat(auto-fit, 270px);
+  justify-items: center;
+}

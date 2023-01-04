@@ -21,3 +21,13 @@
 @import url("../src/components/Portfolio/Portfolio.css");
 
 @import url("../src/components/Footer/Footer.css");
+
+@import url("../src/components/Movies/Movies.css");
+
+@import url("../src/components/SearchForm/SearchForm.css");
+
+@import url("../src/components/FilterCheckbox/FilterCheckbox.css");
+
+@import url("../src/components/MoviesCardList/MoviesCardList.css");
+
+@import url("../src/components/MoviesCard/MoviesCard.css");
