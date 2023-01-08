@@ -14,7 +14,7 @@ function SearchForm() {
             id="search-input"
             aria-label="Поиск фильма"
             placeholder="Фильм"
-            name="search"
+            name="search-input"
           />
           <button
             className="search-form__submit button"

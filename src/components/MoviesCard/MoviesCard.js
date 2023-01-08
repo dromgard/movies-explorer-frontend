@@ -1,7 +1,6 @@
 import React from "react";
 
 function MoviesCard({ image, title, duration, isFavourite }) {
-  console.log(isFavourite);
 
   return (
     <article className="moviescard">

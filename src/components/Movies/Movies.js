@@ -12,7 +12,6 @@ function Movies() {
           className="more-movies-button button"
           type="button"
           aria-label="Показать больше фильмов"
-        // onClick={}
         >Ещё</button>
       </section>
     </>

@@ -10,56 +10,56 @@ function MoviesCardList() {
   // Временная БД с фильмами, на следующем этапе удалить.
   const moviesTemp = [
     {
-      _id: 1,
+      id: 1,
       image: moviePic1,
       title: "31 слово о дизайне",
       duration: "1ч41м",
       isFavourite: true,
     },
     {
-      _id: 2,
+      id: 2,
       image: moviePic2,
       title: "32 слова о дизайне",
       duration: "1ч42м",
       isFavourite: false,
     },
     {
-      _id: 3,
+      id: 3,
       image: moviePic3,
       title: "33 слова о дизайне",
       duration: "1ч43м",
       isFavourite: true,
     },
     {
-      _id: 4,
+      id: 4,
       image: moviePic4,
       title: "34 слова о дизайне",
       duration: "1ч44м",
       isFavourite: false,
     },
     {
-      _id: 5,
+      id: 5,
       image: moviePic1,
       title: "31 слово о дизайне",
       duration: "1ч41м",
       isFavourite: true,
     },
     {
-      _id: 6,
+      id: 6,
       image: moviePic2,
       title: "32 слова о дизайне",
       duration: "1ч42м",
       isFavourite: false,
     },
     {
-      _id: 7,
+      id: 7,
       image: moviePic3,
       title: "33 слова о дизайне",
       duration: "1ч43м",
       isFavourite: true,
     },
     {
-      _id: 8,
+      id: 8,
       image: moviePic4,
       title: "34 слова о дизайне",
       duration: "1ч44м",
@@ -69,7 +69,7 @@ function MoviesCardList() {
 
   const movies = moviesTemp.map((card) => (
     <MoviesCard
-      key={card._id}
+      key={card.id}
       image={card.image}
       title={card.title}
       duration={card.duration}
