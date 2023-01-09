@@ -47,3 +47,28 @@
   border-radius: 5px;
   box-sizing: border-box;
 }
+
+@media screen and (max-width: 768px) {
+  .search-form {
+    padding: 80px 30px 10px;
+  }
+
+  .search-form__form {
+    gap: 43px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .search-form {
+    padding: 74px 14px 10px;
+  }
+
+  .search-form__form {
+    gap: 47px;
+  }
+
+  .search-form__input {
+    padding: 13px;
+    height: 44px;
+  }
+}

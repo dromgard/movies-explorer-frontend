@@ -3,7 +3,7 @@
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 10px;
   list-style: none;
 }
 
@@ -22,4 +22,15 @@
 .navigation-auth__link_login {
   color: #000000;
   background: #2be080;
+}
+
+@media screen and (max-width: 320px) {
+  .navigation-auth__list {
+    gap: 2px;
+  }
+
+  .navigation-auth__link {
+    padding: 5px 12px;
+    font-size: 10px;
+  }
 }

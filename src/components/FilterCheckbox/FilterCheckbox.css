@@ -48,3 +48,9 @@
   color: #000000;
   cursor: pointer;
 }
+
+@media screen and (max-width: 320px) {
+  .filtercheckbox__text {
+    font-size: 11px;
+  }
+}

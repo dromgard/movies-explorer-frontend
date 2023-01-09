@@ -1,15 +1,22 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function Footer() {
   return (
     <footer className="footer">
       <h2 className="footer__title">Учебный проект Яндекс.Практикум х BeatFilm.</h2>
       <div className="footer__container">
-        <p className="footer__text">&copy; {new Date().getFullYear()}</p>
+        <p className="footer__text footer__text_copyright">&copy; {new Date().getFullYear()}</p>
         <div className="footer__info">
-          <p className="footer__text">Яндекс.Практикум</p>
-          <Link className="footer__text link" target="_blank">Github</Link>
+          <a
+            href="https://practicum.yandex.ru/web/"
+            className="footer__text link"
+            target="_blank"
+            rel="noreferrer">Яндекс.Практикум</a>
+          <a
+            href="https://github.com/dromgard"
+            className="footer__text link"
+            target="_blank"
+            rel="noreferrer">Github</a>
         </div>
       </div>
     </footer>

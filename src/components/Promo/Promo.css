@@ -18,3 +18,31 @@
   letter-spacing: -0.04em;
   color: #fff;
 }
+
+@media screen and (max-width: 768px) {
+  .promo {
+    padding: 300px 0 440px;
+    display: flex;
+    justify-content: center;
+    background-position: center 543px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .promo__title {
+    font-size: 35px;
+    line-height: 45px;
+  }
+
+  .promo {
+    padding: 183px 10px 330px;
+    background-position: center 354px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .promo__title {
+    font-size: 31px;
+    line-height: 39px;
+  }
+}

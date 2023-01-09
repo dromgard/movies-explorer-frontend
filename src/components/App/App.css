@@ -61,6 +61,7 @@
 .section-text_techs {
   margin: 0 auto;
   max-width: 460px;
+  letter-spacing: -0.04em;
 }
 
 .input {
@@ -178,4 +179,28 @@
 
 .auth-form__link {
   color: #2be080;
+}
+
+@media screen and (max-width: 768px) {
+  .section-text {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .section-title {
+    padding: 0 0 28px 0;
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .section-text {
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .section-text_techs {
+    max-width: 292px;
+  }
 }

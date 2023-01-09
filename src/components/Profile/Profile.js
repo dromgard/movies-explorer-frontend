@@ -28,18 +28,22 @@ function Profile() {
             name="profile-email"
           />
         </div>
+
+        <span className="profile-form__input-error"></span>
+
+        <button
+          className="profile-form__submit button"
+          type="submit"
+          title="Редактировать"
+        >Редактировать</button>
+        <button
+          className="profile-form__submit profile-form__submit_exit button"
+          type="submit"
+          title="Поиск"
+        >Выйти из аккаунта</button>
       </form>
 
-      <button
-        className="profile-form__submit button"
-        type="submit"
-        title="Редактировать"
-      >Редактировать</button>
-      <button
-        className="profile-form__submit profile-form__submit_exit button"
-        type="submit"
-        title="Поиск"
-      >Выйти из аккаунта</button>
+
 
     </section>
   );

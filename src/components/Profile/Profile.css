@@ -7,7 +7,7 @@
 }
 
 .profile-form {
-  margin: 123px 0 220px;
+  margin: 123px 0 0;
   width: 410px;
   display: flex;
   flex-direction: column;
@@ -46,6 +46,19 @@
   line-height: 13px;
   text-align: right;
   color: #000000;
+}
+
+.profile-form__input-error {
+  margin: 189px 0 20px;
+  padding: 0;
+  height: 14px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  text-align: center;
+  color: #ff004c;
 }
 
 .profile-form__submit {

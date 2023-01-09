@@ -68,3 +68,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@media screen and (max-width: 768px) {
+  .moviescard__image {
+    height: 190px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .moviescard__image {
+    height: 168px;
+  }
+}

@@ -6,6 +6,7 @@ import Login from '../Login/Login';
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
 import NotFound from '../NotFound/NotFound';
+import PopupMenu from '../PopupMenu/PopupMenu';
 import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -14,6 +15,7 @@ function App() {
 
   // States.
   const [isMainPage, setIsMainPage] = useState(false);
+  const [isPopupMenuOpen, setIsPopupMenuOpen] = useState(false);
 
   // Используем хук useLocation для отрисовки компонентов.
   const { pathname } = useLocation();
@@ -40,9 +42,14 @@ function App() {
     return false;
   }
 
+  // Открываем и закрываем попап с меню.
+  const togglePopupMenu = () => {
+    setIsPopupMenuOpen(!isPopupMenuOpen);
+  };
+
   return (
     <div className="app">
-      {compareUrl(urlHeaderRender) ? <Header isMainPage={isMainPage} /> : null}
+      {compareUrl(urlHeaderRender) ? <Header isMainPage={isMainPage} togglePopupMenu={togglePopupMenu} /> : null}
 
       <Routes>
         <Route exact path='/' element={<Main />}>
@@ -62,6 +69,8 @@ function App() {
       </Routes>
 
       {compareUrl(urlFooterRender) ? <Footer /> : null}
+
+      <PopupMenu isOpen={isPopupMenuOpen} togglePopupMenu={togglePopupMenu} />
 
     </div>
   );
