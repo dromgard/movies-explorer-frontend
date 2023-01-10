@@ -11,7 +11,8 @@ function Header({ isMainPage, togglePopupMenu }) {
       <button
         className={`button ${isMainPage ? "header__burger-menu_invisible" : "header__burger-menu"}`}
         type="button"
-        title="Меню"
+        title="Открыть меню"
+        aria-label="Открыть меню"
         onClick={togglePopupMenu}
       />
     </header>

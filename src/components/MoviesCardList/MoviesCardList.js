@@ -4,6 +4,7 @@ import moviePic1 from "../../images/movie-pic-1.png";
 import moviePic2 from "../../images/movie-pic-2.png";
 import moviePic3 from "../../images/movie-pic-3.png";
 import moviePic4 from "../../images/movie-pic-4.png";
+import Preloader from "../Preloader/Preloader";
 
 function MoviesCardList() {
 
@@ -79,7 +80,7 @@ function MoviesCardList() {
 
   return (
     <section className="moviescardlist">
-      {movies}
+      {movies ? movies : <Preloader />}
     </section>
   );
 }

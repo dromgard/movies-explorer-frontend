@@ -16,6 +16,7 @@ function Register() {
           id="name"
           type="text"
           placeholder="Имя"
+          aria-label="Введите имя"
           name="name"
           className="auth-form__input input"
         />
@@ -25,6 +26,7 @@ function Register() {
           id="email"
           type="email"
           placeholder="Email"
+          aria-label="Введите email"
           name="email"
           className="auth-form__input input"
         />
@@ -34,6 +36,7 @@ function Register() {
           id="password"
           type="password"
           placeholder="Пароль"
+          aria-label="Введите пароль"
           name="password"
           className="auth-form__input input"
         />
@@ -44,6 +47,7 @@ function Register() {
           className="auth-form__submit button"
           type="submit"
           aria-label="Зарегистрироваться"
+          title="Зарегистрироваться"
         >
           Зарегистрироваться
         </button>

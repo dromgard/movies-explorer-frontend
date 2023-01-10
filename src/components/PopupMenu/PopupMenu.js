@@ -9,6 +9,7 @@ function PopupMenu({ isOpen, togglePopupMenu, compareUrl }) {
           className="button popup-menu__close"
           type="button"
           aria-label="Закрыть меню"
+          title="Закрыть меню"
           onClick={togglePopupMenu}
         ></button>
         <nav className="popup-menu__navigation">

@@ -16,6 +16,7 @@ function Login() {
           id="email"
           type="email"
           placeholder="Email"
+          aria-label="Введите email"
           name="email"
           className="auth-form__input auth-form__input_login input"
         />
@@ -25,6 +26,7 @@ function Login() {
           id="password"
           type="password"
           placeholder="Пароль"
+          aria-label="Введите пароль"
           name="password"
           className="auth-form__input auth-form__input_login input"
         />
@@ -35,6 +37,7 @@ function Login() {
           className="auth-form__submit auth-form__submit_login button"
           type="submit"
           aria-label="Войти"
+          title="Войти"
         >
           Войти
         </button>

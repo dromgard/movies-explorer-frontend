@@ -42,6 +42,9 @@
   letter-spacing: -0.04em;
   color: #000000;
   background: no-repeat center right url(../../images/link-arrow.svg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .portfolio__links:last-of-type {

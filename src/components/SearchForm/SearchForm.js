@@ -6,20 +6,21 @@ import searchButtonArrow from "../../images/search-button-arrow.svg"
 function SearchForm() {
   return (
     <section className="search-form">
-      <form className="search-form__form">
+      <form className="search-form__form" name="search-form">
         <div className="search-form__container">
           <input
             className="search-form__input input"
             type="text"
             id="search-input"
-            aria-label="Поиск фильма"
+            aria-label="Введите название фильма"
             placeholder="Фильм"
             name="search-input"
           />
           <button
             className="search-form__submit button"
             type="submit"
-            title="Поиск"
+            aria-label="Найти фильм"
+            title="Найти фильм"
           >
             <img src={searchButtonLine} alt="Поиск" />
             <img src={searchButtonArrow} alt="Поиск" />

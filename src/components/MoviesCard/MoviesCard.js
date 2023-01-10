@@ -15,6 +15,7 @@ function MoviesCard({ image, title, duration, isFavourite }) {
           className={`${isFavourite ? "moviescard__favourites-remove" : "moviescard__favourites-add"} button`}
           type="button"
           aria-label="Добавить в избранное"
+          title="Добавить в избранное"
         // onClick={}
         ></button>
       </div>
