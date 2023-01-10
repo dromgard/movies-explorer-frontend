@@ -70,7 +70,7 @@ function App() {
 
       {compareUrl(urlFooterRender) ? <Footer /> : null}
 
-      <PopupMenu isOpen={isPopupMenuOpen} togglePopupMenu={togglePopupMenu} />
+      <PopupMenu isOpen={isPopupMenuOpen} togglePopupMenu={togglePopupMenu} compareUrl={compareUrl} />
 
     </div>
   );

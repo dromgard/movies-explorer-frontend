@@ -1,6 +1,6 @@
 .not-found {
   margin: 0;
-  padding: 0 0 60px;
+  padding: 43px 25px 0 0;
   min-height: 800px;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
 }
 
 .not-found__text {
-  margin: 20px 0 168px;
+  margin: 5px 0 170px;
   padding: 0;
   font-family: "Inter";
   font-style: normal;
@@ -30,4 +30,22 @@
   line-height: 19px;
   text-align: center;
   color: #000000;
+}
+
+@media screen and (max-width: 425px) {
+  .not-found {
+    padding: 43px 0 0 0;
+    min-height: 990px;
+  }
+
+  .not-found__title {
+    font-size: 80px;
+    line-height: 97px;
+  }
+
+  .not-found__text {
+    margin: 10px 0 270px;
+    font-size: 12px;
+    line-height: 15px;
+  }
 }

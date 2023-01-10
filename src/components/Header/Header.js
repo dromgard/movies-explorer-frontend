@@ -9,7 +9,7 @@ function Header({ isMainPage, togglePopupMenu }) {
       <Link className="button header__logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
       {isMainPage ? <NavigationAuth /> : <Navigation />}
       <button
-        className={`button ${isMainPage ? "header__burger-menu_invisible" : "header__burger-menu button"}`}
+        className={`button ${isMainPage ? "header__burger-menu_invisible" : "header__burger-menu"}`}
         type="button"
         title="Меню"
         onClick={togglePopupMenu}

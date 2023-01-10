@@ -149,7 +149,7 @@
   height: 45px;
   padding: 0;
   border: 0;
-  margin: 65px 0 0 0;
+  margin: 71px 0 0 0;
   background: #2be080;
   border-radius: 3px;
   font-family: "Inter";
@@ -162,7 +162,7 @@
 }
 
 .auth-form__submit_login {
-  margin: 175px 0 0 0;
+  margin: 158px 0 0 0;
 }
 
 .auth-form__text {
@@ -186,6 +186,10 @@
     font-size: 12px;
     line-height: 18px;
   }
+
+  .auth {
+    margin: 232px auto 0;
+  }
 }
 
 @media screen and (max-width: 425px) {
@@ -202,5 +206,32 @@
 
   .section-text_techs {
     max-width: 292px;
+  }
+
+  .auth {
+    max-width: 260px;
+    margin: 56px auto 0;
+    gap: 50px;
+    align-items: center;
+  }
+
+  .auth-form {
+    margin: 30px 0 0;
+  }
+
+  .auth-form__submit {
+    margin: 159px 0 0 0;
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .auth-form__text {
+    margin: 14px 0 0;
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .auth-form__submit_login {
+    margin: 247px 0 0 0;
   }
 }
