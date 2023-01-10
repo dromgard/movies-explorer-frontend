@@ -29,7 +29,7 @@
 .profile-form__label {
   margin: 0;
   padding: 0;
-  font-family: "Inter";
+  font-family: "Inter", Arial, sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 11px;
@@ -40,7 +40,7 @@
 .profile-form__input {
   margin: 0;
   padding: 0;
-  font-family: "Inter";
+  font-family: "Inter", Arial, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
@@ -53,7 +53,7 @@
   margin: 189px 0 20px;
   padding: 0;
   height: 14px;
-  font-family: "Inter";
+  font-family: "Inter", Arial, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
@@ -65,7 +65,7 @@
 .profile-form__submit {
   margin: 0;
   padding: 0;
-  font-family: "Inter";
+  font-family: "Inter", Arial, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 13px;

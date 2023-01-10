@@ -12,12 +12,6 @@
   background-color: #fff;
 }
 
-.header__logo {
-  width: 38px;
-  height: 38px;
-  background-image: url(../../images/logo.svg);
-}
-
 .header__burger-menu {
   display: none;
   margin: 0;
@@ -28,10 +22,6 @@
   background-color: unset;
   background-size: 44px 44px;
   background-repeat: no-repeat;
-}
-
-.header__burger-menu_invisible {
-  display: none;
 }
 
 @media screen and (max-width: 768px) {
@@ -53,4 +43,8 @@
     width: 40px;
     height: 43px;
   }
+}
+
+.header__burger-menu_invisible {
+  display: none;
 }

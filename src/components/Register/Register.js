@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function Register() {
   return (
     <section className="auth">
-      <Link className="button header__logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
+      <Link className="button logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
       <h1 className="common-title">Добро пожаловать!</h1>
 
       <form

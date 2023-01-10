@@ -61,6 +61,7 @@
   flex-direction: column;
   gap: 22px;
   align-items: center;
+  list-style: none;
 }
 
 .popup-menu__link {
@@ -68,7 +69,7 @@
   padding: 0;
   width: fit-content;
   height: 28px;
-  font-family: "Inter";
+  font-family: "Inter", Arial, sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 18px;
