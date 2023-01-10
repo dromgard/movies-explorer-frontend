@@ -19,6 +19,7 @@ function Register() {
           aria-label="Введите имя"
           name="name"
           className="auth-form__input input"
+          required
         />
         <span className="auth-form__input-error"></span>
         <label className="auth-form__label">E-mail</label>
@@ -29,6 +30,7 @@ function Register() {
           aria-label="Введите email"
           name="email"
           className="auth-form__input input"
+          required
         />
         <span className="auth-form__input-error"></span>
         <label className="auth-form__label">Пароль</label>
@@ -39,6 +41,7 @@ function Register() {
           aria-label="Введите пароль"
           name="password"
           className="auth-form__input input"
+          required
         />
         <span className="auth-form__input-error"></span>
 

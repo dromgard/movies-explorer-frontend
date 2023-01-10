@@ -19,6 +19,7 @@ function Login() {
           aria-label="Введите email"
           name="email"
           className="auth-form__input auth-form__input_login input"
+          required
         />
         <span className="auth-form__input-error"></span>
         <label className="auth-form__label">Пароль</label>
@@ -29,6 +30,7 @@ function Login() {
           aria-label="Введите пароль"
           name="password"
           className="auth-form__input auth-form__input_login input"
+          required
         />
         <span className="auth-form__input-error"></span>
 

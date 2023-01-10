@@ -1,6 +1,6 @@
 ## Макет
 
-[https://disk.yandex.ru/d/l-wlrA_LI5JmaQ](Лежит тут)
+[Макет сайта](https://disk.yandex.ru/d/l-wlrA_LI5JmaQ)
 
 ## Запуск проекта
 

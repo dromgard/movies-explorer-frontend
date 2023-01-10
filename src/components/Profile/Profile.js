@@ -15,6 +15,7 @@ function Profile() {
             aria-label="Введите имя"
             placeholder="Сергей"
             name="profile-name"
+            required
           />
         </div>
         <div className="profile-form__container">
@@ -26,6 +27,7 @@ function Profile() {
             aria-label="Введите email"
             placeholder="pochta@yandex.ru"
             name="profile-email"
+            required
           />
         </div>
 
