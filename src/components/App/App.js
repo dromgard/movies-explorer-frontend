@@ -11,6 +11,7 @@ import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import { mainApi } from '../../utils/MainApi';
+import { moviesApi } from '../../utils/MoviesApi';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
@@ -120,6 +121,9 @@ function App() {
   // Обрабатываем выход из аккаунта.
   const handleLogout = () => {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("request");
+    localStorage.removeItem("moviesCards");
+    localStorage.removeItem("filtercheckbox");
     navigate("/signin");
     setLoggedIn(false);
   };
@@ -133,6 +137,21 @@ function App() {
       })
       .catch((err) => {
         console.log(`Ошибка обновления данных пользователя: ${err}`);
+      });
+  }
+
+  // Обработчик получения фильмов.
+  function handleGetMovies(request, filtercheckbox) {
+    moviesApi
+      .getMoviesCards()
+      .then((moviesCards) => {
+        console.log(moviesCards);
+        localStorage.setItem("request", request);
+        localStorage.setItem("moviesCards", moviesCards);
+        localStorage.setItem("filtercheckbox", filtercheckbox);
+      })
+      .catch((err) => {
+        console.log(`Ошибка загрзуки фильмов: ${err}`);
       });
   }
 
@@ -154,14 +173,14 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="app">
-        {compareUrl(urlHeaderRender) ? <Header isMainPage={isMainPage} togglePopupMenu={togglePopupMenu} /> : null}
+        {compareUrl(urlHeaderRender) ? <Header loggedIn={loggedIn} isMainPage={isMainPage} togglePopupMenu={togglePopupMenu} /> : null}
 
         <Routes>
           <Route exact path='/' element={<Main />}>
           </Route>
           <Route path='/movies' element={
             <ProtectedRoute loggedIn={loggedIn}>
-              <Movies />
+              <Movies handleGetMovies={handleGetMovies} />
             </ProtectedRoute>
           }>
           </Route>

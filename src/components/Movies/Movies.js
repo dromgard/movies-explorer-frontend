@@ -2,10 +2,10 @@ import React from "react";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 
-function Movies() {
+function Movies({ handleGetMovies }) {
   return (
     <>
-      <SearchForm />
+      <SearchForm handleGetMovies={handleGetMovies} />
       <MoviesCardList />
       <section className="more-movies">
         <button

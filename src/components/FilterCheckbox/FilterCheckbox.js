@@ -1,6 +1,6 @@
 import React from "react";
 
-function FilterCheckbox() {
+function FilterCheckbox({ filtercheckbox, handleCheckbox }) {
   return (
     <label className="filtercheckbox">
       <input
@@ -9,6 +9,8 @@ function FilterCheckbox() {
         name="checkbox"
         id="checkbox"
         aria-label="Показать короткометражки"
+        checked={filtercheckbox}
+        onChange={() => handleCheckbox(!filtercheckbox)}
       />
       <span className="filtercheckbox__text">Короткометражки</span>
     </label>
