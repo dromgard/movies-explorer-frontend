@@ -3,33 +3,46 @@ import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 function Profile({ onEditProfile, handleLogout }) {
 
+  // Получаем данные текущего пользователя.
   const currentUser = useContext(CurrentUserContext);
 
+  // States.
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [textError, setTextError] = useState("");
 
+  // Записываем данные текущего пользователя в стейты для дальнейшего сравнения.
   useEffect(() => {
     setName(currentUser.name);
     setEmail(currentUser.email);
+    setNewName(currentUser.name);
+    setNewEmail(currentUser.email);
   }, [currentUser]);
 
-  // Обработчики полей ввода
+  // Обработчики полей ввода имени и email.
   function handleChangeName(e) {
-    setName(e.target.value);
+    setNewName(e.target.value);
+    setTextError("");
   }
 
   function handleChangeEmail(e) {
-    setEmail(e.target.value);
+    setNewEmail(e.target.value);
+    setTextError("");
   }
 
-  // Обработчик сохранения изменений
+  // Обработчик сохранения изменений.
   function handleUpdateUser(e) {
     e.preventDefault();
 
+    // Проверяем, что пользователь ввёл новые данные.
+    if (name === newName || email === newEmail) {
+      setTextError('Введите новые данные');
+      return;
+    }
     // Передаём значения управляемых компонентов во внешний обработчик
-    onEditProfile({ name, email });
+    onEditProfile(newName, newEmail);
   }
 
   return (
@@ -46,7 +59,7 @@ function Profile({ onEditProfile, handleLogout }) {
             aria-label="Введите имя"
             placeholder="Имя"
             name="profile-name"
-            value={name}
+            value={newName || name}
             onChange={handleChangeName}
             required
           />
@@ -60,13 +73,13 @@ function Profile({ onEditProfile, handleLogout }) {
             aria-label="Введите email"
             placeholder="Email"
             name="profile-email"
-            value={email}
+            value={newEmail || email}
             onChange={handleChangeEmail}
             required
           />
         </div>
 
-        <span className="profile-form__input-error"></span>
+        <span className="profile-form__input-error">{textError}</span>
 
         <button
           className="profile-form__submit button"
@@ -83,8 +96,6 @@ function Profile({ onEditProfile, handleLogout }) {
           onClick={handleLogout}
         >Выйти из аккаунта</button>
       </form>
-
-
 
     </section>
   );

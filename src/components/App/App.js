@@ -125,7 +125,7 @@ function App() {
   };
 
   // Обработчик сохранения данных пользователя.
-  function handleUpdateUser({ name, email }) {
+  function handleUpdateUser(name, email) {
     mainApi
       .editUserInfo(name, email)
       .then((userData) => {
@@ -135,6 +135,7 @@ function App() {
         console.log(`Ошибка обновления данных пользователя: ${err}`);
       });
   }
+
   // Сравнивает текущий роут с переданным массивом роутов.
   function compareUrl(urlList) {
     for (let key in urlList) {
