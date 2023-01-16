@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-function Profile() {
+function Profile({ onEditProfile, handleLogout }) {
+
+  const currentUser = useContext(CurrentUserContext);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+
+  useEffect(() => {
+    setName(currentUser.name);
+    setEmail(currentUser.email);
+  }, [currentUser]);
+
+  // Обработчики полей ввода
+  function handleChangeName(e) {
+    setName(e.target.value);
+  }
+
+  function handleChangeEmail(e) {
+    setEmail(e.target.value);
+  }
+
+  // Обработчик сохранения изменений
+  function handleUpdateUser(e) {
+    e.preventDefault();
+
+    // Передаём значения управляемых компонентов во внешний обработчик
+    onEditProfile({ name, email });
+  }
+
   return (
     <section className="profile">
       <h1 className="common-title">Привет, Сергей!</h1>
@@ -13,8 +44,10 @@ function Profile() {
             type="text"
             id="profile-name"
             aria-label="Введите имя"
-            placeholder="Сергей"
+            placeholder="Имя"
             name="profile-name"
+            value={name}
+            onChange={handleChangeName}
             required
           />
         </div>
@@ -25,8 +58,10 @@ function Profile() {
             type="email"
             id="profile-email"
             aria-label="Введите email"
-            placeholder="pochta@yandex.ru"
+            placeholder="Email"
             name="profile-email"
+            value={email}
+            onChange={handleChangeEmail}
             required
           />
         </div>
@@ -38,12 +73,14 @@ function Profile() {
           type="submit"
           title="Редактировать профиль"
           aria-label="Редактировать профиль"
+          onClick={handleUpdateUser}
         >Редактировать</button>
         <button
           className="profile-form__submit profile-form__submit_exit button"
           type="submit"
           title="Выйти из аккаунта"
           aria-label="Выйти из аккаунта"
+          onClick={handleLogout}
         >Выйти из аккаунта</button>
       </form>
 

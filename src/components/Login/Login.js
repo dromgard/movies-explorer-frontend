@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Login() {
+function Login({ handleLogin }) {
+
+  // States.
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // функции обработчики.
+  const handleChangeEmail = (e) => {
+    setEmail(e.target.value)
+  }
+
+  const handleChangePassword = (e) => {
+    setPassword(e.target.value)
+  }
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLogin(email, password, resetForm);
+  }
+
   return (
     <section className="auth">
       <Link className="button logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
@@ -10,6 +34,7 @@ function Login() {
       <form
         name="login"
         className="auth-form"
+        onSubmit={handleSubmit}
       >
         <label className="auth-form__label">E-mail</label>
         <input
@@ -18,6 +43,8 @@ function Login() {
           placeholder="Email"
           aria-label="Введите email"
           name="email"
+          value={email}
+          onChange={handleChangeEmail}
           className="auth-form__input auth-form__input_login input"
           required
         />
@@ -29,6 +56,8 @@ function Login() {
           placeholder="Пароль"
           aria-label="Введите пароль"
           name="password"
+          value={password}
+          onChange={handleChangePassword}
           className="auth-form__input auth-form__input_login input"
           required
         />

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -10,28 +10,131 @@ import PopupMenu from '../PopupMenu/PopupMenu';
 import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import SavedMovies from '../SavedMovies/SavedMovies';
+import { mainApi } from '../../utils/MainApi';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 function App() {
 
-  // States.
-  const [isMainPage, setIsMainPage] = useState(false);
+  // States для вёрстки.
   const [isPopupMenuOpen, setIsPopupMenuOpen] = useState(false);
+
+  // States для пользователя.
+  const [currentUser, setCurrentUser] = useState({});
+  const [loggedIn, setLoggedIn] = useState(false);
 
   // Используем хук useLocation для отрисовки компонентов.
   const { pathname } = useLocation();
   const urlHeaderRender = ['/', '/movies', '/saved-movies', '/profile'];
   const urlFooterRender = ['/', '/movies', '/saved-movies'];
 
-  // Проверка на главную страницу и изменение стейта.
-  function CheckMainPage() {
-    pathname === '/' ? setIsMainPage(true) : setIsMainPage(false)
-  }
+  //Отслеживаем изменение роута и запускаем проверку на главную страницу.
+  const isMainPage = useMemo(() => pathname === '/' ? true : false, [pathname]);
 
-  // Отслеживаем изменение роута и запускаем проверку на главную страницу.
+  let navigate = useNavigate();
+
+  // Проверяем наличие токена в локальном хранилище, загружаем данные пользователя и карточки.
+  const tokenCheck = () => {
+    const jwt = localStorage.getItem("jwt");
+    mainApi.setToken(jwt);
+    if (jwt) {
+      mainApi.getUserInfo()
+        .then((userData) => {
+          if (userData) {
+            console.log('tokenCheck', userData);
+            setCurrentUser(userData);
+            setLoggedIn(true);
+            navigate("/movies");
+          } else {
+            setLoggedIn(false);
+            navigate("/");
+          }
+        })
+        .catch((err) => {
+          setLoggedIn(false);
+          console.log(`Переданный токен некорректен: ${err}`);
+        });
+    } else {
+      setLoggedIn(false);
+      navigate("/");
+    }
+  };
+
+  // Проверка на логин при загрузке страницы.
   useEffect(() => {
-    CheckMainPage();
-  }, [pathname]);
+    tokenCheck();
+  }, [loggedIn]);
 
+  // Обработчик логина.
+  const handleLogin = (userEmail, userPassword, resetLoginForm) => {
+    if (!userEmail || !userPassword) {
+      return;
+    }
+    mainApi
+      .authorize(userEmail, userPassword)
+      .then((data) => {
+        console.log('handleLogin', data);
+        if (data.token) {
+          localStorage.setItem("jwt", data.token);
+          setLoggedIn(true);
+          navigate("/movies");
+          resetLoginForm();
+        }
+      })
+      .catch((err) => {
+        // setResultMessage({
+        //   text: "Что-то пошло не так! Попробуйте ещё раз.",
+        //   image: authError,
+        // });
+        // setIsInfoMessagePopupOpen(true);
+        console.log(err);
+      });
+  };
+
+  // Обработчик регистрации.
+  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm) => {
+    mainApi
+      .register(userEmail, userPassword, userName)
+      .then((res) => {
+        console.log('handleRegister', res);
+        // setResultMessage({
+        //   text: "Вы успешно зарегистрировались!",
+        //   image: regSuccess,
+        // });
+        navigate("/signin");
+        resetRegisterForm();
+        console.log("Успех регистрации", res);
+      })
+      .catch((err) => {
+        // setResultMessage({
+        //   text: "Что-то пошло не так!",
+        //   image: authError,
+        // });
+        console.log("Ошибка регистрации", err);
+      });
+    // .finally(() => {
+    //   setIsInfoMessagePopupOpen(true);
+    // });
+  };
+
+  // Обрабатываем выход из аккаунта.
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    navigate("/signin");
+    setLoggedIn(false);
+  };
+
+  // Обработчик сохранения данных пользователя.
+  function handleUpdateUser({ name, email }) {
+    mainApi
+      .editUserInfo(name, email)
+      .then((userData) => {
+        setCurrentUser(userData.data);
+      })
+      .catch((err) => {
+        console.log(`Ошибка обновления данных пользователя: ${err}`);
+      });
+  }
   // Сравнивает текущий роут с переданным массивом роутов.
   function compareUrl(urlList) {
     for (let key in urlList) {
@@ -48,31 +151,45 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {compareUrl(urlHeaderRender) ? <Header isMainPage={isMainPage} togglePopupMenu={togglePopupMenu} /> : null}
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="app">
+        {compareUrl(urlHeaderRender) ? <Header isMainPage={isMainPage} togglePopupMenu={togglePopupMenu} /> : null}
 
-      <Routes>
-        <Route exact path='/' element={<Main />}>
-        </Route>
-        <Route path='/movies' element={<Movies />}>
-        </Route>
-        <Route path='/saved-movies' element={<SavedMovies />}>
-        </Route>
-        <Route path='/profile' element={<Profile />}>
-        </Route>
-        <Route path='/signup' element={<Register />}>
-        </Route>
-        <Route path='/signin' element={<Login />}>
-        </Route>
-        <Route path="*" element={<NotFound />}>
-        </Route>
-      </Routes>
+        <Routes>
+          <Route exact path='/' element={<Main />}>
+          </Route>
+          <Route path='/movies' element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Movies />
+            </ProtectedRoute>
+          }>
+          </Route>
+          <Route path='/saved-movies' element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <SavedMovies />
+            </ProtectedRoute>
+          }>
+          </Route>
+          <Route path='/profile' element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Profile onEditProfile={handleUpdateUser} handleLogout={handleLogout} />
+            </ProtectedRoute>
+          }>
+          </Route>
+          <Route path='/signup' element={<Register handleRegister={handleRegister} />}>
+          </Route>
+          <Route path='/signin' element={<Login handleLogin={handleLogin} />}>
+          </Route>
+          <Route path="*" element={<NotFound />}>
+          </Route>
+        </Routes>
 
-      {compareUrl(urlFooterRender) ? <Footer /> : null}
+        {compareUrl(urlFooterRender) ? <Footer /> : null}
 
-      <PopupMenu isOpen={isPopupMenuOpen} togglePopupMenu={togglePopupMenu} compareUrl={compareUrl} />
+        <PopupMenu isOpen={isPopupMenuOpen} togglePopupMenu={togglePopupMenu} compareUrl={compareUrl} />
 
-    </div>
+      </div >
+    </CurrentUserContext.Provider >
   );
 }
 

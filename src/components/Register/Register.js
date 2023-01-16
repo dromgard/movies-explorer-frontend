@@ -1,7 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Register() {
+function Register({ handleRegister }) {
+
+  // States.
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // функции обработчики.
+  const handleChangeName = (e) => {
+    setName(e.target.value)
+  }
+
+  const handleChangeEmail = (e) => {
+    setEmail(e.target.value)
+  }
+
+  const handleChangePassword = (e) => {
+    setPassword(e.target.value)
+  }
+
+  const resetForm = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleRegister(email, password, name, resetForm);
+  }
+
+
   return (
     <section className="auth">
       <Link className="button logo" to="/" aria-label="Перейти на страницу 'О Проекте'" />
@@ -10,6 +41,7 @@ function Register() {
       <form
         name="register"
         className="auth-form"
+        onSubmit={handleSubmit}
       >
         <label className="auth-form__label">Имя</label>
         <input
@@ -18,6 +50,8 @@ function Register() {
           placeholder="Имя"
           aria-label="Введите имя"
           name="name"
+          value={name}
+          onChange={handleChangeName}
           className="auth-form__input input"
           required
         />
@@ -29,6 +63,8 @@ function Register() {
           placeholder="Email"
           aria-label="Введите email"
           name="email"
+          value={email}
+          onChange={handleChangeEmail}
           className="auth-form__input input"
           required
         />
@@ -40,6 +76,8 @@ function Register() {
           placeholder="Пароль"
           aria-label="Введите пароль"
           name="password"
+          value={password}
+          onChange={handleChangePassword}
           className="auth-form__input input"
           required
         />
