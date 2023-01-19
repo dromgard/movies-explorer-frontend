@@ -45,11 +45,11 @@ class MainApi {
   }
 
   // Получаем карточки.
-  // getInitialCards() {
-  //   return fetch(`${this._baseUrl}/cards`, {
-  //     headers: this._headers,
-  //   }).then(this._handleResponse);
-  // }
+  getSavedMovies() {
+    return fetch(`${this._baseUrl}/movies`, {
+      headers: this._headers,
+    }).then(this._handleResponse);
+  }
 
   // Отправляем новые данные пользоателя.
   editUserInfo(name, email) {
@@ -64,24 +64,22 @@ class MainApi {
   }
 
   // Добавляем новую карточку.
-  // addNewCard(name, link) {
-  //   return fetch(`${this._baseUrl}/cards`, {
-  //     method: "POST",
-  //     headers: this._headers,
-  //     body: JSON.stringify({
-  //       name: name,
-  //       link: link,
-  //     }),
-  //   }).then(this._handleResponse);
-  // }
+  saveMovie(data, token) {
+    return fetch(`${this._baseUrl}/movies`, {
+      method: "POST",
+      headers: this._headers,
+      body: JSON.stringify(data),
+    }).then(this._handleResponse);
+  }
 
   // Удаляем карточку.
-  // deleteCard(id) {
-  //   return fetch(`${this._baseUrl}/cards/${id}`, {
-  //     method: "DELETE",
-  //     headers: this._headers,
-  //   }).then(this._handleResponse);
-  // }
+  deleteSavedMovie(id, token) {
+    console.log(1);
+    return fetch(`${this._baseUrl}/movies/${id}`, {
+      method: "DELETE",
+      headers: this._headers,
+    }).then(this._handleResponse);
+  }
 
   // Ставим лайк.
   // addLike(id) {

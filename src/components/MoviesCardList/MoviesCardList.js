@@ -1,87 +1,123 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MoviesCard from "../MoviesCard/MoviesCard";
-import moviePic1 from "../../images/movie-pic-1.png";
-import moviePic2 from "../../images/movie-pic-2.png";
-import moviePic3 from "../../images/movie-pic-3.png";
-import moviePic4 from "../../images/movie-pic-4.png";
-import Preloader from "../Preloader/Preloader";
+import useCurrentSize from "../../utils/useCurrentSize";
 
-function MoviesCardList() {
+function MoviesCardList({
+  locationPathname,
+  data,
+  onSaveMovie,
+  onDeleteSavedMovie,
+}) {
 
-  // Временная БД с фильмами, на следующем этапе удалить.
-  const moviesTemp = [
-    {
-      id: 1,
-      image: moviePic1,
-      title: "31 слово о дизайне",
-      duration: "1ч41м",
-      isFavourite: true,
-    },
-    {
-      id: 2,
-      image: moviePic2,
-      title: "32 слова о дизайне",
-      duration: "1ч42м",
-      isFavourite: false,
-    },
-    {
-      id: 3,
-      image: moviePic3,
-      title: "33 слова о дизайне",
-      duration: "1ч43м",
-      isFavourite: true,
-    },
-    {
-      id: 4,
-      image: moviePic4,
-      title: "34 слова о дизайне",
-      duration: "1ч44м",
-      isFavourite: false,
-    },
-    {
-      id: 5,
-      image: moviePic1,
-      title: "31 слово о дизайне",
-      duration: "1ч41м",
-      isFavourite: true,
-    },
-    {
-      id: 6,
-      image: moviePic2,
-      title: "32 слова о дизайне",
-      duration: "1ч42м",
-      isFavourite: false,
-    },
-    {
-      id: 7,
-      image: moviePic3,
-      title: "33 слова о дизайне",
-      duration: "1ч43м",
-      isFavourite: true,
-    },
-    {
-      id: 8,
-      image: moviePic4,
-      title: "34 слова о дизайне",
-      duration: "1ч44м",
-      isFavourite: false,
-    },
-  ];
+  const size = useCurrentSize();
 
-  const movies = moviesTemp.map((card) => (
+  // Данные для перерендера массива фильмов в зависимости от ширины экрана.
+  const resizeConstants = {
+    xl: {
+      width: 1280,
+      moviesToRender: 16,
+      moviesToAdd: 4,
+    },
+    large: {
+      width: 1024,
+      moviesToRender: 12,
+      moviesToAdd: 3,
+    },
+    medium: {
+      width: 990,
+      moviesToRender: 8,
+      moviesToAdd: 2,
+    },
+    small: {
+      width: 768,
+      moviesToRender: 5,
+      moviesToAdd: 1,
+    }
+  }
+
+  // States
+  const [randerChanged, setRanderChanged] = useState(false);
+  const [moviesToRender, setMoviesToRender] = useState([]);
+  const [isShowButtonActive, setIsShowButtonActive] = useState(false);
+  const [numberMoviesToRender, setNumberMoviesToRender] = useState(0);
+  const [numberMoviesToAdd, setNumberMoviesToAdd] = useState(0);
+
+  // Устанавливаем количесвто фильмом для загрузки и для добавления в зависимости от ширины окна.
+  const countNumberMoviesToRender = () => {
+    if (size.width >= resizeConstants.xl.width) {
+      setNumberMoviesToRender(resizeConstants.xl.moviesToRender);
+      setNumberMoviesToAdd(resizeConstants.xl.moviesToAdd);
+    } else if (size.width < resizeConstants.xl.width && size.width >= resizeConstants.large.width) {
+      setNumberMoviesToRender(resizeConstants.large.moviesToRender);
+      setNumberMoviesToAdd(resizeConstants.large.moviesToAdd);
+    } else if (size.width < resizeConstants.medium.width && size.width >= resizeConstants.small.width) {
+      setNumberMoviesToRender(resizeConstants.medium.moviesToRender);
+      setNumberMoviesToAdd(resizeConstants.medium.moviesToAdd);
+    } else if (size.width < resizeConstants.small.width) {
+      setNumberMoviesToRender(resizeConstants.small.moviesToRender);
+      setNumberMoviesToAdd(resizeConstants.small.moviesToAdd);
+    };
+  };
+
+  // По кнопке "Ещё" добавляем к длине массива фильмов новые элементы для рендера.
+  const handleShowMoreMoviesButtonClick = () => {
+    setRanderChanged(!randerChanged);
+    if (data) {
+      setMoviesToRender(data.slice(0, moviesToRender.length + numberMoviesToAdd));
+      if (moviesToRender.length >= data.length - numberMoviesToAdd) {
+        setIsShowButtonActive(false);
+      }
+    }
+
+  }
+
+  // Перерисовываем страницу после изменения ширины окна.
+  useEffect(() => {
+    countNumberMoviesToRender();
+  }, [size.width])
+
+  // Перерисовываем страницу после изменения массива или изменения количества фильмов для рендера.
+  useEffect(() => {
+    if (data) {
+      setMoviesToRender(data.slice(0, numberMoviesToRender));
+      if (data.length <= numberMoviesToRender) {
+        setIsShowButtonActive(false);
+      } else {
+        setIsShowButtonActive(true);
+      };
+    }
+  }, [data, numberMoviesToRender])
+
+  // Генерируем разметку массива фильмов.
+  const moviesCardsMarkup = moviesToRender.map((item) => (
     <MoviesCard
-      key={card.id}
-      image={card.image}
-      title={card.title}
-      duration={card.duration}
-      isFavourite={card.isFavourite}
+      key={item.id || item._id}
+      data={item}
+      locationPathname={locationPathname}
+      onSaveMovie={onSaveMovie}
+      onDeleteSavedMovie={onDeleteSavedMovie}
     />
-  ));
+  ))
 
   return (
-    <section className="moviescardlist">
-      {movies ? movies : <Preloader />}
-    </section>
+    <>
+      <section className="moviescardlist">
+        {moviesCardsMarkup}
+      </section>
+
+      {isShowButtonActive ? (
+        <section className="more-movies">
+          <button
+            className="more-movies-button button"
+            type="button"
+            aria-label="Показать больше фильмов"
+            title="Показать больше фильмов"
+            onClick={handleShowMoreMoviesButtonClick}
+          >Ещё</button>
+        </section>
+      ) : null}
+
+    </>
   );
 }
 

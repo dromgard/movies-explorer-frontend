@@ -3,7 +3,7 @@ import FilterCheckbox from "../FilterCheckbox/FilterCheckbox";
 import searchButtonLine from "../../images/search-button-line.svg"
 import searchButtonArrow from "../../images/search-button-arrow.svg"
 
-function SearchForm({ handleGetMovies }) {
+function SearchForm({ onSubmit }) {
   // States.
   const lastSearch = localStorage.getItem("request");
   const lastFiltercheckbox = (localStorage.getItem("filtercheckbox") === "true") ? true : false;
@@ -25,7 +25,7 @@ function SearchForm({ handleGetMovies }) {
       return;
     }
 
-    handleGetMovies(request, filtercheckbox);
+    onSubmit(request, filtercheckbox);
   }
 
   return (
