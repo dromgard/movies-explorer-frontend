@@ -26,14 +26,20 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   // States для фильмов.
-  const [isNoMoviesFound, setIsNoMoviesFound] = useState(false); // Поиск фильма ничего не нашел "Фильмы".
-  const [isNoSavedMoviesFound, setIsNoSavedMoviesFound] = useState(false); //Результат поиска на странице "Сохраненные Фильмы"
   const [isLoadingMoviesData, setIsLoadingMoviesData] = useState(false); // Идёт загрузка. Прелоадер.
-  const [foundSavedMoviesData, setFoundSavedMoviesData] = useState([]); // Массив "Сохраненные Фильмы"
+
   const [moviesData, setMoviesData] = useState([]); // Результат поиска на странице "Фильмы"
-  const [getSavedMoviesResStatus, setGetSavedMoviesResStatus] = useState(null); //Ошибки АПИ после поиска "Сохраненные Фильмы".
+  const [foundSavedMoviesData, setFoundSavedMoviesData] = useState([]); // Массив "Сохраненные Фильмы"
+  const [isNoSavedMoviesFound, setIsNoSavedMoviesFound] = useState(false); //Результат поиска на странице "Сохраненные Фильмы"
+
+  const [isNoMoviesFound, setIsNoMoviesFound] = useState(false); // Поиск фильма ничего не нашел "Фильмы".
   const [isSavedMoviesEmpty, setIsSavedMoviesEmpty] = useState(false); // Поиск фильма ничего не нашел "Сохраненные Фильмы".
-  const [moviesApiResStatus, setMoviesApiResStatus] = useState(null); // Ошибки АПИ после поиска "Фильмы".
+
+  const [isMoviesApiError, setIsMoviesApiError] = useState(false); // Ошибки АПИ после поиска "Фильмы".
+  const [isFavouritesMoviesApiError, setIsFavouritesMoviesApiError] = useState(false); //Ошибки АПИ после поиска "Сохраненные Фильмы"
+
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [needUpdate, setNeedUpdate] = useState(false);
 
   // Используем хук useLocation для отрисовки компонентов.
   const { pathname } = useLocation();
@@ -53,7 +59,7 @@ function App() {
       mainApi.getUserInfo()
         .then((userData) => {
           if (userData) {
-            setCurrentUser(userData);
+            setCurrentUser(userData.user);
             setLoggedIn(true);
             navigate("/movies");
           } else {
@@ -72,7 +78,7 @@ function App() {
   };
 
   // Обработчик логина.
-  const handleLogin = (userEmail, userPassword, resetLoginForm) => {
+  const handleLogin = (userEmail, userPassword, resetLoginForm, setIsLoginError) => {
     if (!userEmail || !userPassword) {
       return;
     }
@@ -87,39 +93,22 @@ function App() {
         }
       })
       .catch((err) => {
-        // setResultMessage({
-        //   text: "Что-то пошло не так! Попробуйте ещё раз.",
-        //   image: authError,
-        // });
-        // setIsInfoMessagePopupOpen(true);
+        setIsLoginError(true)
         console.log(err);
       });
   };
 
   // Обработчик регистрации.
-  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm) => {
+  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm, setIsRegisterError) => {
     mainApi
       .register(userEmail, userPassword, userName)
       .then((res) => {
-        console.log('handleRegister', res);
-        // setResultMessage({
-        //   text: "Вы успешно зарегистрировались!",
-        //   image: regSuccess,
-        // });
         navigate("/signin");
-        resetRegisterForm();
-        console.log("Успех регистрации", res);
+        resetRegisterForm(true);
       })
       .catch((err) => {
-        // setResultMessage({
-        //   text: "Что-то пошло не так!",
-        //   image: authError,
-        // });
-        console.log("Ошибка регистрации", err);
+        setIsRegisterError()
       });
-    // .finally(() => {
-    //   setIsInfoMessagePopupOpen(true);
-    // });
   };
 
   // Обрабатываем выход из аккаунта.
@@ -134,31 +123,18 @@ function App() {
 
 
   // Обработчик сохранения данных пользователя.
-  function handleUpdateUser(name, email) {
+  function handleUpdateUser(name, email, setTextError, setIsEditDone) {
     mainApi
       .editUserInfo(name, email)
       .then((userData) => {
         setCurrentUser(userData.data);
+        setIsEditDone(true);
       })
       .catch((err) => {
+        setTextError(`Ошибка обновления данных пользователя: ${err}`)
         console.log(`Ошибка обновления данных пользователя: ${err}`);
       });
   }
-
-  // // Обработчик получения фильмов.
-  // function handleGetMovies(request, filtercheckbox) {
-  //   moviesApi
-  //     .getMoviesCards()
-  //     .then((moviesCards) => {
-  //       console.log(moviesCards);
-  //       localStorage.setItem("request", request);
-  //       localStorage.setItem("moviesCards", moviesCards);
-  //       localStorage.setItem("filtercheckbox", filtercheckbox);
-  //     })
-  //     .catch((err) => {
-  //       console.log(`Ошибка загрзуки фильмов: ${err}`);
-  //     });
-  // }
 
   // Сравнивает текущий роут с переданным массивом роутов.
   function compareUrl(urlList) {
@@ -176,7 +152,7 @@ function App() {
   };
 
   // Поиск и фильтрация фильмов на странице "Фильмы".
-  const handleSearchMoviesData = (request, filtercheckbox) => {
+  const handleSearchMovies = (request, filtercheckbox) => {
     // 1 этап. Выполняем поиск фильмов и сохраняем данные в localStorage.
     setIsLoadingMoviesData(true);
     localStorage.setItem("request", request);
@@ -184,14 +160,14 @@ function App() {
 
     moviesApi.getMoviesCards()
       .then((res) => {
-        // setMoviesApiResStatus(res.status);
+        setIsMoviesApiError(false);
 
         // Сохраняем исходный массив фильмов в localStorage.
         localStorage.setItem('movies', JSON.stringify(res));
       })
       .catch((err) => {
         console.log(err);
-        setMoviesApiResStatus(err)
+        setIsMoviesApiError(true);
       })
       .finally(() => {
         setIsLoadingMoviesData(false);
@@ -210,12 +186,10 @@ function App() {
       }
 
       // Сохраняем фильтрованный массив фильмов в localStorage.
-      localStorage.setItem('filtered-previously-movies', JSON.stringify(filteredMovies));
+      localStorage.setItem('filtered-movies', JSON.stringify(filteredMovies));
 
       // Сохраняем фильтрованный массив фильмов в state.
-      // setMoviesData(markAsSaved(filteredMovies));
       setMoviesData(filteredMovies);
-
     }
   };
 
@@ -223,7 +197,7 @@ function App() {
   const loadSavedMoviesData = () => {
     mainApi.getSavedMovies()
       .then((res) => {
-        setGetSavedMoviesResStatus(res.status);
+        setIsFavouritesMoviesApiError(false);
 
         if (res.data.length === 0) {
           setIsSavedMoviesEmpty(true);
@@ -236,59 +210,46 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-        setMoviesApiResStatus(err)
+        setIsFavouritesMoviesApiError(true);
       })
 
   }
 
   // Поиск фильмов на странице "Сохраненные фильмы".
-  // const handleSearchSavedMoviesData = (request, filtercheckbox, isAfterDelete = false) => {
-  //   const token = localStorage.getItem('jwt');
+  const handleSearchSavedMovies = async (request, filtercheckbox) => {
+    localStorage.setItem("fav-request", request);
+    localStorage.setItem("fav-filtercheckbox", filtercheckbox);
+    setIsLoadingMoviesData(true);
+    await mainApi.getSavedMovies()
+      .then((res) => {
+        setIsFavouritesMoviesApiError(false);
+        if (res.data.length === 0) {
+          setIsSavedMoviesEmpty(true);
+          setFoundSavedMoviesData(res.data);
+          return;
+        } else {
+          const filteredSavedMovies = searchFilter(request, filtercheckbox, res.data);
 
-  //   if (token) {
-  //     mainApi.getSavedMovies(token)
-  //       .then((res) => {
-  //         setGetSavedMoviesResStatus(res.status);
+          if (filteredSavedMovies.length === 0) {
+            setIsNoSavedMoviesFound(true);
+          } else {
+            setIsNoSavedMoviesFound(false);
+          }
+          setIsFiltering(true);
+          setNeedUpdate(false);
+          setFoundSavedMoviesData(filteredSavedMovies)
+          setIsSavedMoviesEmpty(false);
 
-  //         if (res.data.length === 0) {
-  //           setIsSavedMoviesEmpty(true);
-  //           setFoundSavedMoviesData(res.data);
-  //           return;
-  //         } else {
-  //           setIsSavedMoviesEmpty(false);
-  //         }
-
-  //         const savedMoviesData = res.data.reverse();
-
-  //         const filteredSavedMovies = searchFilter(request, filtercheckbox, savedMoviesData);
-
-  //         if (filteredSavedMovies.length === 0) {
-  //           setIsNoSavedMoviesFound(true);
-  //         } else {
-  //           setIsNoSavedMoviesFound(false);
-  //         }
-  //         setFoundSavedMoviesData(filteredSavedMovies)
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         setMoviesApiResStatus(err)
-  //       })
-  //   }
-  // }
-
+        }
+      })
+      .catch((err) => {
+        setIsFavouritesMoviesApiError(true);
+      })
+      .finally(() => {
+        setIsLoadingMoviesData(false);
+      })
 
 
-
-  // Поиск фильмов на странице "Сохраненные фильмы".
-  const handleSearchSavedMoviesData = (request, filtercheckbox) => {
-    const filteredSavedMovies = searchFilter(request, filtercheckbox, foundSavedMoviesData);
-
-    if (filteredSavedMovies.length === 0) {
-      setIsNoSavedMoviesFound(true);
-    } else {
-      setIsNoSavedMoviesFound(false);
-    }
-    setFoundSavedMoviesData(filteredSavedMovies)
 
   }
 
@@ -298,36 +259,11 @@ function App() {
   }, [loggedIn]);
 
 
-  // const getInitialSavedMoviesIds = () => {
-  //   const initialSavedMoviesIds = [];
-
-  //   foundSavedMoviesData.forEach((savedMovie) => {
-  //     initialSavedMoviesIds.push(savedMovie.movieId);
-  //   });
-
-  //   return initialSavedMoviesIds;
-  // };
-
-  // const markAsSaved = (foundMoviesArr) => {
-  //   const initialSavedMoviesIdsArr = getInitialSavedMoviesIds();
-  //   foundMoviesArr.forEach((foundMovie) => {
-  //     foundMovie.saved = initialSavedMoviesIdsArr.some((savedMovieId) => savedMovieId === foundMovie.id);
-  //   })
-
-  //   foundSavedMoviesData.forEach((savedMovie) => {
-  //     foundMoviesArr.forEach((foundMovie) => {
-  //       if (foundMovie.id === savedMovie.movieId) {
-  //         foundMovie._id = savedMovie._id;
-  //       }
-  //     })
-  //   })
-  //   return foundMoviesArr;
-  // }
 
   // Управляем лайками в локал localStorage.
   const toggleFavouritesMoviesInLocal = (id) => {
     // Получаем текущий массив сохраненок.
-    const filteredMovies = JSON.parse(localStorage.getItem('filtered-previously-movies'));
+    const filteredMovies = JSON.parse(localStorage.getItem('filtered-movies'));
 
     // Находим фильм с нужным id и ставим/удаляем лайк.
     filteredMovies.forEach((foundMovie) => {
@@ -342,20 +278,21 @@ function App() {
     })
 
     // Сохраняем новый массив в localStorage.
-    localStorage.setItem('filtered-previously-movies', JSON.stringify(filteredMovies));
+    localStorage.setItem('filtered-movies', JSON.stringify(filteredMovies));
     setMoviesData(filteredMovies);
   }
 
 
-  // Находим id фильма с сервера для удаления из избранного.
-  const getSavedMoviesForPageMovies = (cardLocalId) => {
+  // Загружаем фильмы с сервера для удаления из избранного.
+  const getSavedMoviesForPageMovies = () => {
     return mainApi.getSavedMovies()
       .then((res) => {
+        setIsFavouritesMoviesApiError(false);
         return res.data;
       })
       .catch((err) => {
         console.log(err);
-        // setMoviesApiResStatus(err)
+        setIsFavouritesMoviesApiError(true);
       })
   }
 
@@ -378,86 +315,46 @@ function App() {
 
       })
       .catch((err) => {
-        // setOpenNotificationModal();
-        // setNotificationText(`${DELETE_MOVIE_ERROR_TEXTS.BASE_TEXT} ${err}`)
         console.log(err);
       })
       .finally(() => {
         toggleFavouritesMoviesInLocal(id)
-        console.log("Удалили из фильмы local")
       })
-
-
-
   }
-
 
   // Обработчик сохранения фильма в избранное.
   const handleSaveFavoriteMovie = (data) => {
-    const token = localStorage.getItem('jwt'); // Удалить
-    if (token) {
-      mainApi.saveMovie(data, token)
-        .then((res) => {
-        })
-        .catch((err) => {
-          // setOpenNotificationModal();
-          // setNotificationText(`${SAVE_MOVIE_ERROR_TEXTS.BASE_TEXT} ${err}`)
-          console.log(err);
-        })
-        .finally(() => {
-          // handleSearchSavedMoviesData();
-          toggleFavouritesMoviesInLocal(data.movieId);
-        })
-    } else {
-      // history.push('/signin');
-      console.log('пользователь не найден')
-    };
+    mainApi.saveMovie(data)
+      .then((res) => {
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        toggleFavouritesMoviesInLocal(data.movieId);
+      })
   };
-
-  // const markAsUnsaved = (id) => {
-  //   moviesData.forEach((movie) => {
-  //     if (movie.saved) {
-  //       if (movie._id === id) {
-  //         delete movie.saved;
-  //         delete movie._id;
-  //       }
-  //     }
-  //   })
-  // }
 
   // Обработчик удаления фильма из избранного.
   const handleDeleteSavedMovie = (serverId, localId) => {
+    mainApi.deleteSavedMovie(serverId) // Удяляем фильм из БД.
+      .then((res) => {
+        toggleFavouritesMoviesInLocal(localId); // Удаляем лайки из localstorage.
 
-    const token = localStorage.getItem('jwt'); // Удалить
+        foundSavedMoviesData.forEach((item, index) => { // Удаляем фильм из массива "Сохраненные фильмы".
+          if (item._id === serverId) {
+            delete foundSavedMoviesData[index];
+            setFoundSavedMoviesData(foundSavedMoviesData);
+          }
 
-    if (token) {
-      mainApi.deleteSavedMovie(serverId, token) // Удяляем фильм из БД.
-        .then((res) => {
-          toggleFavouritesMoviesInLocal(localId); // Удяляем лайки из localstorage.
-
-          foundSavedMoviesData.forEach((item, index) => {
-            if (item._id === serverId) {
-              delete foundSavedMoviesData[index];
-              setFoundSavedMoviesData(foundSavedMoviesData);
-            }
-
-          });
-
-        })
-        .catch((err) => {
-          // setOpenNotificationModal();
-          // setNotificationText(`${DELETE_MOVIE_ERROR_TEXTS.BASE_TEXT} ${err}`)
-          console.log(err);
-        })
-        .finally(() => {
-          // toggleFavouritesMoviesInLocal(data.movieId);
-
-        })
-    };
+        });
+        setNeedUpdate(true);
+        setIsFiltering(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
-
-
-
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -472,9 +369,8 @@ function App() {
               <Movies
                 isNoMoviesFound={isNoMoviesFound}
                 isLoadingData={isLoadingMoviesData}
-                resStatus={moviesApiResStatus}
-                onSubmit={handleSearchMoviesData}
-                // moviesData={markAsSaved(moviesData)}
+                isMoviesApiError={isMoviesApiError}
+                onSubmit={handleSearchMovies}
                 moviesData={moviesData}
                 onSaveMovie={handleSaveFavoriteMovie}
                 onDeleteSavedMovie={deleteSavedMovieForPageMovies}
@@ -485,14 +381,16 @@ function App() {
           <Route path='/saved-movies' element={
             <ProtectedRoute loggedIn={loggedIn}>
               <SavedMovies
+                needUpdate={needUpdate}
+                isFiltering={isFiltering}
                 loadSavedMoviesData={loadSavedMoviesData}
                 isSavedMoviesEmpty={isSavedMoviesEmpty}
                 isLoadingData={isLoadingMoviesData}
                 isNoSavedMoviesFound={isNoSavedMoviesFound}
                 savedMovies={foundSavedMoviesData}
-                handleSearchSavedMoviesData={handleSearchSavedMoviesData}
+                handleSearchSavedMovies={handleSearchSavedMovies}
                 onDeleteSavedMovie={handleDeleteSavedMovie}
-                getSavedMoviesResStatus={getSavedMoviesResStatus}
+                isFavouritesMoviesApiError={isFavouritesMoviesApiError}
               />
             </ProtectedRoute>
           }>

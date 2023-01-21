@@ -2,30 +2,56 @@ import React, { useState } from "react";
 import FilterCheckbox from "../FilterCheckbox/FilterCheckbox";
 import searchButtonLine from "../../images/search-button-line.svg"
 import searchButtonArrow from "../../images/search-button-arrow.svg"
+import { useLocation } from "react-router-dom";
 
 function SearchForm({ onSubmit }) {
   // States.
   const lastSearch = localStorage.getItem("request");
   const lastFiltercheckbox = (localStorage.getItem("filtercheckbox") === "true") ? true : false;
+  const lastFavouriteSearch = localStorage.getItem("fav-request");
+  const lastFavouriteFiltercheckbox = (localStorage.getItem("fav-filtercheckbox") === "true") ? true : false;
 
-  const [request, setRequest] = useState(lastSearch || "");
-  const [filtercheckbox, setFiltercheckbox] = useState(lastFiltercheckbox);
+  const { pathname } = useLocation();
+
+  const [request, setRequest] = useState(pathname === "/movies" ? lastSearch || "" : lastFavouriteSearch || "");
+  const [filtercheckbox, setFiltercheckbox] = useState(pathname === "/movies" ? lastFiltercheckbox : lastFavouriteFiltercheckbox);
+  const [isRequestEmpty, setIsRequestEmpty] = useState(false);
+
 
   // Функции обработчики.
   const handleRequest = (e) => {
     setRequest(e.target.value)
+
+    if (e.target.value) {
+      setIsRequestEmpty(false)
+    } else {
+      setIsRequestEmpty(true)
+    }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Проверяем не пустой ли запрос.
-    if (request === "") {
+    if (isRequestEmpty) {
+      setIsRequestEmpty(true)
       console.log("Введите запрос");
       return;
     }
 
     onSubmit(request, filtercheckbox);
+  }
+
+  const handleCheckbox = (checkboxstatus) => {
+    setFiltercheckbox(checkboxstatus);
+    // Проверяем не пустой ли запрос.
+    if (isRequestEmpty) {
+      setIsRequestEmpty(true)
+      console.log("Введите запрос");
+      // return;
+    }
+
+    onSubmit(request, checkboxstatus);
   }
 
   return (
@@ -53,7 +79,8 @@ function SearchForm({ onSubmit }) {
             <img src={searchButtonArrow} alt="Поиск" />
           </button>
         </div>
-        <FilterCheckbox filtercheckbox={filtercheckbox} handleCheckbox={setFiltercheckbox} />
+        <span className="search-form__input-error">{isRequestEmpty && "Введите запрос"}</span>
+        <FilterCheckbox filtercheckbox={filtercheckbox} handleCheckbox={handleCheckbox} />
       </form>
     </section>
   );

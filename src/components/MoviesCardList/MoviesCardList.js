@@ -36,14 +36,14 @@ function MoviesCardList({
   }
 
   // States
-  const [randerChanged, setRanderChanged] = useState(false);
-  const [moviesToRender, setMoviesToRender] = useState([]);
-  const [isShowButtonActive, setIsShowButtonActive] = useState(false);
-  const [numberMoviesToRender, setNumberMoviesToRender] = useState(0);
-  const [numberMoviesToAdd, setNumberMoviesToAdd] = useState(0);
+  const [isSizeChanged, setIsSizeChanged] = useState(true); // Поменялся размер экрана?
+  const [moviesToRender, setMoviesToRender] = useState([]); // Массив фильмов после фильтра.
+  const [isMoreButtonActive, setIsMoreButtonActive] = useState(false); // Показываем кнопку Ещё?
+  const [numberMoviesToRender, setNumberMoviesToRender] = useState(0); // Сколько фильмов отрисовывать.
+  const [numberMoviesToAdd, setNumberMoviesToAdd] = useState(0); // Сколько фильмов добавлять.
 
-  // Устанавливаем количесвто фильмом для загрузки и для добавления в зависимости от ширины окна.
-  const countNumberMoviesToRender = () => {
+  // Устанавливаем количество фильмов для загрузки и для добавления в зависимости от ширины окна.
+  const getNumberOfMoviesToRender = () => {
     if (size.width >= resizeConstants.xl.width) {
       setNumberMoviesToRender(resizeConstants.xl.moviesToRender);
       setNumberMoviesToAdd(resizeConstants.xl.moviesToAdd);
@@ -61,11 +61,14 @@ function MoviesCardList({
 
   // По кнопке "Ещё" добавляем к длине массива фильмов новые элементы для рендера.
   const handleShowMoreMoviesButtonClick = () => {
-    setRanderChanged(!randerChanged);
     if (data) {
       setMoviesToRender(data.slice(0, moviesToRender.length + numberMoviesToAdd));
+      let math = moviesToRender.length + numberMoviesToAdd;
+      console.log('math.length', math);
+      console.log('data.length', data.length);
+      setNumberMoviesToRender(math);
       if (moviesToRender.length >= data.length - numberMoviesToAdd) {
-        setIsShowButtonActive(false);
+        setIsMoreButtonActive(false);
       }
     }
 
@@ -73,20 +76,42 @@ function MoviesCardList({
 
   // Перерисовываем страницу после изменения ширины окна.
   useEffect(() => {
-    countNumberMoviesToRender();
+    getNumberOfMoviesToRender();
   }, [size.width])
+
+  // Перерисовываем страницу после изменения массива или изменения количества фильмов для рендера.
+  useEffect(() => {
+    if (data) {
+      if (isSizeChanged) {
+        setIsSizeChanged(false)
+        setMoviesToRender(data.slice(0, numberMoviesToRender));
+        if (data.length <= numberMoviesToRender) {
+          setIsMoreButtonActive(false);
+        } else {
+          setIsMoreButtonActive(true);
+        };
+      } else {
+        setMoviesToRender(data.slice(0, numberMoviesToRender));
+        if (data.length <= numberMoviesToRender) {
+          setIsMoreButtonActive(false);
+        } else {
+          setIsMoreButtonActive(true);
+        };
+      }
+    }
+  }, [data])
 
   // Перерисовываем страницу после изменения массива или изменения количества фильмов для рендера.
   useEffect(() => {
     if (data) {
       setMoviesToRender(data.slice(0, numberMoviesToRender));
       if (data.length <= numberMoviesToRender) {
-        setIsShowButtonActive(false);
+        setIsMoreButtonActive(false);
       } else {
-        setIsShowButtonActive(true);
+        setIsMoreButtonActive(true);
       };
     }
-  }, [data, numberMoviesToRender])
+  }, [numberMoviesToRender])
 
   // Генерируем разметку массива фильмов.
   const moviesCardsMarkup = moviesToRender.map((item) => (
@@ -99,13 +124,15 @@ function MoviesCardList({
     />
   ))
 
+  // console.log('isSizeChanged', isSizeChanged)
+
   return (
     <>
       <section className="moviescardlist">
         {moviesCardsMarkup}
       </section>
 
-      {isShowButtonActive ? (
+      {isMoreButtonActive ? (
         <section className="more-movies">
           <button
             className="more-movies-button button"

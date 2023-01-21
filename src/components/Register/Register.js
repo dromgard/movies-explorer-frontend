@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Register({ handleRegister }) {
@@ -7,31 +7,90 @@ function Register({ handleRegister }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inputNameError, setInputNameError] = useState("");
+  const [isNameValid, setIsNameValid] = useState(false);
+  const [inputEmailError, setInputEmailError] = useState("");
+  const [inputPasswordError, setInputPasswordError] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isRegisterError, setIsRegisterError] = useState(false);
 
-  // функции обработчики.
-  const handleChangeName = (e) => {
-    setName(e.target.value)
+  // Обработчики полей ввода имени, email и пароля.
+  function handleChangeName(e) {
+    let inputValue = e.target.value;
+    setName(inputValue);
+    const nameRegex = /^[а-яА-ЯёЁa-zA-Z -]+$/g
+
+    if (inputValue.length < 2 || inputValue.length > 30) {
+      setInputNameError('Длина имени от 2 до 30 символов')
+      setIsNameValid(false);
+    } else if (!nameRegex.test(String(inputValue))) {
+      setInputNameError('Имя не соответствует шаблону: [а-яА-Яa-zA-Z -]')
+      setIsNameValid(false);
+    } else {
+      setIsNameValid(true);
+      setInputNameError("");
+    }
   }
 
-  const handleChangeEmail = (e) => {
-    setEmail(e.target.value)
+  function handleChangeEmail(e) {
+    let inputValue = e.target.value;
+    setEmail(inputValue);
+
+    const emailRegex = /^([\w]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    if (inputValue.length === 0) {
+      setInputEmailError('e-mail не должен быть пустым');
+      setIsEmailValid(false);
+    } else if (!emailRegex.test(String(inputValue).toLowerCase())) {
+      setInputEmailError('Введите корректный e-mail');
+      setIsEmailValid(false);
+    } else {
+      setIsEmailValid(true);
+      setInputEmailError('');
+    }
   }
 
-  const handleChangePassword = (e) => {
-    setPassword(e.target.value)
+  function handleChangePassword(e) {
+    let inputValue = e.target.value;
+    setPassword(inputValue);
+
+    if (inputValue.length === 0) {
+      setInputPasswordError('Пароль не должен быть пустым')
+      setIsPasswordValid(false);
+    } else {
+      setInputPasswordError('')
+      setIsPasswordValid(true);
+    }
   }
 
+  // Финальная валидация отвечает за блокировку / разблокировку формы.
+  function makeFinalValidation() {
+    setIsRegisterError(false);
+    if (!isEmailValid || !isPasswordValid || !isNameValid) {
+      setIsFormValid(false);
+      return;
+    }
+
+    setIsFormValid(true);
+  }
+
+  // Сброс формы.
   const resetForm = () => {
     setName("");
     setEmail("");
     setPassword("");
   }
 
+  // Обработка нажатия на кнопку "Регистрация".
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleRegister(email, password, name, resetForm);
+    handleRegister(email, password, name, resetForm, setIsRegisterError);
   }
 
+  useEffect(() => {
+    makeFinalValidation();
+  }, [email, password, isNameValid])
 
   return (
     <section className="auth">
@@ -55,7 +114,7 @@ function Register({ handleRegister }) {
           className="auth-form__input input"
           required
         />
-        <span className="auth-form__input-error"></span>
+        <span className="auth-form__input-error">{inputNameError}</span>
         <label className="auth-form__label">E-mail</label>
         <input
           id="email"
@@ -68,7 +127,7 @@ function Register({ handleRegister }) {
           className="auth-form__input input"
           required
         />
-        <span className="auth-form__input-error"></span>
+        <span className="auth-form__input-error">{inputEmailError}</span>
         <label className="auth-form__label">Пароль</label>
         <input
           id="password"
@@ -81,14 +140,17 @@ function Register({ handleRegister }) {
           className="auth-form__input input"
           required
         />
-        <span className="auth-form__input-error"></span>
+        <span className="auth-form__input-error">{inputPasswordError}</span>
+
+        <span className="auth-form__info-message">{isRegisterError && "Произошла ошибка! Попробуйте ещё раз."}</span>
 
         <button
           name="submit"
-          className="auth-form__submit button"
+          className={`auth-form__submit button ${isFormValid ? "" : "auth-form__submit_inactive"}`}
           type="submit"
           aria-label="Зарегистрироваться"
           title="Зарегистрироваться"
+          disabled={!isFormValid}
         >
           Зарегистрироваться
         </button>

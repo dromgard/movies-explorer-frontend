@@ -17,12 +17,12 @@
 .profile-form__container {
   padding: 16px 0 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 }
 
 .profile-form__container:first-of-type {
-  padding: 0 0 16px;
+  padding: 0 0 4px;
   border-bottom: 1px solid #e8e8e8;
 }
 
@@ -37,6 +37,12 @@
   color: #000000;
 }
 
+.profile-form__input-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .profile-form__input {
   margin: 0;
   padding: 0;
@@ -49,8 +55,8 @@
   color: #000000;
 }
 
-.profile-form__input-error {
-  margin: 189px 0 20px;
+.profile-form__info-message {
+  margin: 177px 0 20px;
   padding: 0;
   height: 14px;
   font-family: "Inter", Arial, sans-serif;
@@ -60,6 +66,10 @@
   line-height: 13px;
   text-align: center;
   color: #ff004c;
+}
+
+.profile-form__info-message_positive {
+  color: #007700;
 }
 
 .profile-form__submit {
@@ -72,6 +82,11 @@
   line-height: 16px;
   color: #000000;
   background: none;
+}
+
+.profile-form__submit_inactive {
+  color: #ebebeb;
+  opacity: 0.7;
 }
 
 .profile-form__submit_exit {

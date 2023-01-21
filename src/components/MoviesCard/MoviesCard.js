@@ -73,11 +73,17 @@ function MoviesCard({
 
   return (
     <article className="moviescard">
-      <img
-        src={movieData.image}
-        alt={movieData.nameRU || movieData.nameEN}
-        className="moviescard__image"
-      />
+      <a
+        href={movieData.trailerLink}
+        target='_blank'
+        aria-label={movieData.nameRU}
+        rel="noreferrer"
+      >
+        <img
+          src={movieData.image}
+          alt={movieData.nameRU || movieData.nameEN}
+          className="moviescard__image"
+        /></a>
       <div className="moviescard__container">
         <h2 className="moviescard__title">{movieData.nameRU || movieData.nameEN}</h2>
         <button
