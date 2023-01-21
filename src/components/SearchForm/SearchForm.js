@@ -4,7 +4,7 @@ import searchButtonLine from "../../images/search-button-line.svg"
 import searchButtonArrow from "../../images/search-button-arrow.svg"
 import { useLocation } from "react-router-dom";
 
-function SearchForm({ onSubmit }) {
+function SearchForm({ onSubmit, savedSearchName, savedSearchShorts }) {
   // States.
   const lastSearch = localStorage.getItem("request");
   const lastFiltercheckbox = (localStorage.getItem("filtercheckbox") === "true") ? true : false;
@@ -13,45 +13,26 @@ function SearchForm({ onSubmit }) {
 
   const { pathname } = useLocation();
 
-  const [request, setRequest] = useState(pathname === "/movies" ? lastSearch || "" : lastFavouriteSearch || "");
-  const [filtercheckbox, setFiltercheckbox] = useState(pathname === "/movies" ? lastFiltercheckbox : lastFavouriteFiltercheckbox);
+  const [searchName, setSearchName] = useState(savedSearchName);
+  const [searchShorts, setSearchShorts] = useState(savedSearchShorts);
   const [isRequestEmpty, setIsRequestEmpty] = useState(false);
 
 
   // Функции обработчики.
   const handleRequest = (e) => {
-    setRequest(e.target.value)
-
-    if (e.target.value) {
-      setIsRequestEmpty(false)
-    } else {
-      setIsRequestEmpty(true)
-    }
+    setSearchName(e.target.value)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Проверяем не пустой ли запрос.
-    if (isRequestEmpty) {
-      setIsRequestEmpty(true)
-      console.log("Введите запрос");
-      return;
-    }
-
-    onSubmit(request, filtercheckbox);
+    onSubmit(searchName, searchShorts);
   }
 
   const handleCheckbox = (checkboxstatus) => {
-    setFiltercheckbox(checkboxstatus);
-    // Проверяем не пустой ли запрос.
-    if (isRequestEmpty) {
-      setIsRequestEmpty(true)
-      console.log("Введите запрос");
-      // return;
-    }
-
-    onSubmit(request, checkboxstatus);
+    console.log("попали в чекбокс", checkboxstatus);
+    onSubmit(searchName, checkboxstatus);
+    setSearchShorts(checkboxstatus);
   }
 
   return (
@@ -65,7 +46,7 @@ function SearchForm({ onSubmit }) {
             aria-label="Введите название фильма"
             placeholder="Фильм"
             name="search-input"
-            value={request}
+            value={searchName}
             onChange={handleRequest}
             required
           />
@@ -80,7 +61,19 @@ function SearchForm({ onSubmit }) {
           </button>
         </div>
         <span className="search-form__input-error">{isRequestEmpty && "Введите запрос"}</span>
-        <FilterCheckbox filtercheckbox={filtercheckbox} handleCheckbox={handleCheckbox} />
+        {/* <label className="filtercheckbox">
+          <input
+            type="checkbox"
+            className="filtercheckbox__input checkbox"
+            name="checkbox"
+            id="checkbox"
+            aria-label="Показать короткометражки"
+            checked={filtercheckbox}
+            onChange={() => handleCheckbox(!filtercheckbox)}
+          />
+          <span className="filtercheckbox__text">Короткометражки</span>
+        </label> */}
+        <FilterCheckbox filtercheckbox={searchShorts} handleCheckbox={handleCheckbox} />
       </form>
     </section>
   );

@@ -64,7 +64,7 @@ class MainApi {
   }
 
   // Добавляем новую карточку.
-  saveMovie(data, token) {
+  saveMovie(data) {
     return fetch(`${this._baseUrl}/movies`, {
       method: "POST",
       headers: this._headers,
@@ -73,54 +73,12 @@ class MainApi {
   }
 
   // Удаляем карточку.
-  deleteSavedMovie(id, token) {
-    console.log(1);
+  deleteSavedMovie(id) {
     return fetch(`${this._baseUrl}/movies/${id}`, {
       method: "DELETE",
       headers: this._headers,
     }).then(this._handleResponse);
   }
-
-  // Ставим лайк.
-  // addLike(id) {
-  //   return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-  //     method: "PUT",
-  //     headers: this._headers,
-  //   }).then(this._handleResponse);
-  // }
-
-  // Удаляем лайк.
-  // deleteLike(id) {
-  //   return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-  //     method: "DELETE",
-  //     headers: this._headers,
-  //   }).then(this._handleResponse);
-  // }
-
-  // changeLikeCardStatus(id, isLiked) {
-  //   if (isLiked) {
-  //     return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-  //       method: "PUT",
-  //       headers: this._headers,
-  //     }).then(this._handleResponse);
-  //   } else {
-  //     return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-  //       method: "DELETE",
-  //       headers: this._headers,
-  //     }).then(this._handleResponse);
-  //   }
-  // }
-
-  // Обновляем аватар.
-  // updateUserAvatar(link) {
-  //   return fetch(`${this._baseUrl}/users/me/avatar`, {
-  //     method: "PATCH",
-  //     headers: this._headers,
-  //     body: JSON.stringify({
-  //       avatar: link,
-  //     }),
-  //   }).then(this._handleResponse);
-  // }
 }
 
 // Создаем экземпляр класса подключения к серверу.

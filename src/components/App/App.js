@@ -23,10 +23,16 @@ function App() {
 
   // States для пользователя.
   const [currentUser, setCurrentUser] = useState({});
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   // States для фильмов.
   const [isLoadingMoviesData, setIsLoadingMoviesData] = useState(false); // Идёт загрузка. Прелоадер.
+
+  const [movies, setMovies] = useState([]); // Исходные фильмы из BitFilms.
+  const [savedMovies, setSavedMovies] = useState([]); // Исходные фильмы из нашего API.
+  const [filteredMovies, setFilteredMovies] = useState([]); // Отфильтрованные фильмы.
+  const [filteredSavedMovies, setFilteredSavedMovies] = useState([]); // Отфильтрованные фильмы.
+
 
   const [moviesData, setMoviesData] = useState([]); // Результат поиска на странице "Фильмы"
   const [foundSavedMoviesData, setFoundSavedMoviesData] = useState([]); // Массив "Сохраненные Фильмы"
@@ -51,6 +57,112 @@ function App() {
 
   let navigate = useNavigate();
 
+
+  const mergeMovies = (bitFilmsMovies, savedMovies) => {
+    return bitFilmsMovies.map((movie) => {
+      const savedMovie = savedMovies.find((movieSaved) => movieSaved.movieId === movie.id)
+      movie.saved = !!savedMovie;
+      movie._id = savedMovie ? savedMovie._id : "";
+      return movie;
+    })
+  }
+
+
+  const filterMovies = (name, isShorts) => {
+    console.log("попали в filterMovies", name, isShorts);
+    localStorage.setItem('search-name', name);
+    localStorage.setItem('search-isShorts', JSON.stringify(isShorts));
+
+    const filter = (films) => {
+      const filteredFilms = searchFilter(name, isShorts, films);
+      setFilteredMovies(filteredFilms);
+    }
+
+    if (movies.length === 0) {
+      const localMovies = JSON.parse(localStorage.getItem('movies') || "[]");
+      if (localMovies.length === 0) {
+        setIsLoadingMoviesData(true);
+        const jwt = localStorage.getItem("jwt");
+        mainApi.setToken(jwt);
+
+        Promise.all([moviesApi.getMoviesCards(), mainApi.getSavedMovies()])
+          .then(([bitFilmsMovies, { data: savedMovies }]) => {
+            console.log("bitFilmsMovies", bitFilmsMovies)
+            console.log("savedMovies", savedMovies)
+            const mergedMovies = mergeMovies(bitFilmsMovies, savedMovies)
+            setIsMoviesApiError(false);
+            setMovies(mergedMovies);
+            filter(mergedMovies)
+            // Сохраняем исходный массив фильмов в localStorage.
+            localStorage.setItem('movies', JSON.stringify(mergedMovies));
+          })
+          .catch((err) => {
+            console.log(err);
+            setIsMoviesApiError(true);
+          })
+          .finally(() => {
+            setIsLoadingMoviesData(false);
+          })
+      } else {
+        setMovies(localMovies);
+        filter(localMovies);
+      }
+
+    } else {
+      filter(movies);
+    }
+  }
+
+  // Сохраненки
+  const filterSavedMovies = (name, isShorts) => {
+    console.log("попали в filterMovies", name, isShorts);
+    localStorage.setItem('search-name-saved', name);
+    localStorage.setItem('search-isShorts-saved', JSON.stringify(isShorts));
+
+    const filter = (films) => {
+      const filteredFilms = searchFilter(name, isShorts, films);
+      setFilteredSavedMovies(filteredFilms);
+    }
+
+    if (savedMovies.length === 0) {
+      const localMovies = JSON.parse(localStorage.getItem('saved-movies') || "[]");
+      if (localMovies.length === 0) {
+        setIsLoadingMoviesData(true);
+        const jwt = localStorage.getItem("jwt");
+        mainApi.setToken(jwt);
+        mainApi.getSavedMovies()
+          .then((res) => {
+            const cards = res.data.map((card) => {
+              card.saved = true;
+              return card;
+            })
+
+            setIsMoviesApiError(false);
+            setSavedMovies(cards);
+            filter(cards)
+            // Сохраняем исходный массив фильмов в localStorage.
+            localStorage.setItem('saved-movies', JSON.stringify(cards));
+          })
+          .catch((err) => {
+            console.log(err);
+            setIsMoviesApiError(true);
+          })
+          .finally(() => {
+            setIsLoadingMoviesData(false);
+          })
+      } else {
+        setSavedMovies(localMovies);
+        filter(localMovies);
+      }
+
+    } else {
+      filter(savedMovies);
+    }
+  }
+
+
+
+
   // Проверяем наличие токена в локальном хранилище, загружаем данные пользователя и карточки.
   const tokenCheck = () => {
     const jwt = localStorage.getItem("jwt");
@@ -61,7 +173,7 @@ function App() {
           if (userData) {
             setCurrentUser(userData.user);
             setLoggedIn(true);
-            navigate("/movies");
+            // navigate("/movies");
           } else {
             setLoggedIn(false);
             navigate("/");
@@ -262,16 +374,20 @@ function App() {
 
   // Управляем лайками в локал localStorage.
   const toggleFavouritesMoviesInLocal = (id) => {
+    console.log("2-управляем лайками в локал")
     // Получаем текущий массив сохраненок.
     const filteredMovies = JSON.parse(localStorage.getItem('filtered-movies'));
 
     // Находим фильм с нужным id и ставим/удаляем лайк.
     filteredMovies.forEach((foundMovie) => {
       if (foundMovie.id === id) {
+        console.log("3-нашли фильм в локал")
         // Нашли фильм и проверяем стоит ли лайк
         if (foundMovie.saved) {
+          console.log("4-удалили лайк в локал")
           foundMovie.saved = false
         } else {
+          console.log("4-поставили лайк в локал")
           foundMovie.saved = true
         }
       }
@@ -322,34 +438,63 @@ function App() {
       })
   }
 
-  // Обработчик сохранения фильма в избранное.
-  const handleSaveFavoriteMovie = (data) => {
-    mainApi.saveMovie(data)
-      .then((res) => {
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        toggleFavouritesMoviesInLocal(data.movieId);
+  // Обработчик сохранения фильма в избранное со страницы "Фильмы".
+  const handleSaveFavoriteMovie = (card) => {
+
+    console.log("card", card)
+    const promise = card.saved ? mainApi.deleteSavedMovie(card._id) : mainApi.saveMovie(card)
+
+    promise
+      .then(() => mainApi.getSavedMovies())
+      .then(({ data }) => {
+        const cards = data.map((card) => {
+          card.saved = true;
+          return card;
+        })
+
+        localStorage.setItem('saved-movies', JSON.stringify(cards));
+        setSavedMovies(() => cards);
+
+
+
+        const mergedMovies = mergeMovies(movies, cards)
+
+        setMovies(() => mergedMovies);
+
+        // Сохраняем исходный массив фильмов в localStorage.
+        localStorage.setItem('movies', JSON.stringify(mergedMovies));
+
       })
   };
 
-  // Обработчик удаления фильма из избранного.
+
+  useEffect(() => {
+    const savedSearchName = localStorage.getItem("search-name-saved") || "";
+    const savedSearchShorts = (localStorage.getItem("search-isShorts-saved") === "true") ? true : false;
+
+    filterSavedMovies(savedSearchName, savedSearchShorts)
+  }, [savedMovies.length])
+
+
+  // Обработчик удаления фильма из избранного со страницы "Сохраненное".
   const handleDeleteSavedMovie = (serverId, localId) => {
+    console.log("1-saved-удаление лайка")
     mainApi.deleteSavedMovie(serverId) // Удяляем фильм из БД.
       .then((res) => {
-        toggleFavouritesMoviesInLocal(localId); // Удаляем лайки из localstorage.
-
+        // toggleFavouritesMoviesInLocal(localId); // Удаляем лайки из localstorage.
+        console.log("5-saved-удалили лайк из БД")
         foundSavedMoviesData.forEach((item, index) => { // Удаляем фильм из массива "Сохраненные фильмы".
           if (item._id === serverId) {
+            console.log("6-saved-нашли фильм в стэйте и удалили")
             delete foundSavedMoviesData[index];
             setFoundSavedMoviesData(foundSavedMoviesData);
           }
 
         });
         setNeedUpdate(true);
+        console.log("NeedUpdate", needUpdate)
         setIsFiltering(false);
+        console.log("IsFiltering", isFiltering)
       })
       .catch((err) => {
         console.log(err);
@@ -367,13 +512,13 @@ function App() {
           <Route path='/movies' element={
             <ProtectedRoute loggedIn={loggedIn}>
               <Movies
+                filterMovies={filterMovies}
                 isNoMoviesFound={isNoMoviesFound}
                 isLoadingData={isLoadingMoviesData}
                 isMoviesApiError={isMoviesApiError}
                 onSubmit={handleSearchMovies}
-                moviesData={moviesData}
+                moviesData={filteredMovies}
                 onSaveMovie={handleSaveFavoriteMovie}
-                onDeleteSavedMovie={deleteSavedMovieForPageMovies}
               />
             </ProtectedRoute>
           }>
@@ -387,9 +532,9 @@ function App() {
                 isSavedMoviesEmpty={isSavedMoviesEmpty}
                 isLoadingData={isLoadingMoviesData}
                 isNoSavedMoviesFound={isNoSavedMoviesFound}
-                savedMovies={foundSavedMoviesData}
-                handleSearchSavedMovies={handleSearchSavedMovies}
-                onDeleteSavedMovie={handleDeleteSavedMovie}
+                savedMovies={filteredSavedMovies}
+                handleSearchSavedMovies={filterSavedMovies}
+                onSaveMovie={handleSaveFavoriteMovie}
                 isFavouritesMoviesApiError={isFavouritesMoviesApiError}
               />
             </ProtectedRoute>

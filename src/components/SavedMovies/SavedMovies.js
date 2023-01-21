@@ -8,7 +8,7 @@ function SavedMovies({
   needUpdate,
   isFiltering,
   loadSavedMoviesData,
-  onDeleteSavedMovie,
+  onSaveMovie,
   savedMovies,
   isSavedMoviesEmpty,
   isLoadingData,
@@ -17,37 +17,46 @@ function SavedMovies({
   isNoSavedMoviesFound,
 }) {
 
+  const savedSearchName = localStorage.getItem("search-name-saved") || "";
+  const savedSearchShorts = (localStorage.getItem("search-isShorts-saved") === "true") ? true : false;
+
+  console.log("savedSearchName", savedSearchName)
+  console.log("savedSearchShorts", savedSearchShorts)
+
   const handleSubmit = (request, filtercheckbox) => {
     handleSearchSavedMovies(request, filtercheckbox);
   }
 
+
+
+
   let location = useLocation();
 
   useEffect(() => {
-    loadSavedMoviesData();
+    handleSearchSavedMovies(savedSearchName, savedSearchShorts);
   }, [])
 
-  const handleUpdateMovies = () => {
-    if (!isFiltering && !needUpdate) {
-      loadSavedMoviesData();
-      return;
-    }
+  // const handleUpdateMovies = () => {
+  //   if (!isFiltering && !needUpdate) {
+  //     loadSavedMoviesData();
+  //     return;
+  //   }
 
-    if (needUpdate) {
-      loadSavedMoviesData();
-      return;
-    }
-  };
+  //   if (needUpdate) {
+  //     loadSavedMoviesData();
+  //     return;
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    handleUpdateMovies();
+  //   handleUpdateMovies();
 
-  }, [savedMovies])
+  // }, [savedMovies])
 
   return (
     <>
-      <SearchForm onSubmit={handleSubmit} />
+      <SearchForm onSubmit={handleSubmit} savedSearchName={savedSearchName} savedSearchShorts={savedSearchShorts} />
       {!isLoadingData && isSavedMoviesEmpty && (
         <span className="section-text section-text_movies">В избранном пусто</span>
       )}
@@ -63,9 +72,9 @@ function SavedMovies({
           Подождите немного и попробуйте ещё раз.</span>
       )}
       <MoviesCardList
-        data={isNoSavedMoviesFound ? [] : savedMovies}
+        data={savedMovies}
         locationPathname={location.pathname}
-        onDeleteSavedMovie={onDeleteSavedMovie}
+        onSaveMovie={onSaveMovie}
       />
     </>
   );

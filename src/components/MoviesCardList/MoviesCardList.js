@@ -64,8 +64,6 @@ function MoviesCardList({
     if (data) {
       setMoviesToRender(data.slice(0, moviesToRender.length + numberMoviesToAdd));
       let math = moviesToRender.length + numberMoviesToAdd;
-      console.log('math.length', math);
-      console.log('data.length', data.length);
       setNumberMoviesToRender(math);
       if (moviesToRender.length >= data.length - numberMoviesToAdd) {
         setIsMoreButtonActive(false);
@@ -120,11 +118,8 @@ function MoviesCardList({
       data={item}
       locationPathname={locationPathname}
       onSaveMovie={onSaveMovie}
-      onDeleteSavedMovie={onDeleteSavedMovie}
     />
   ))
-
-  // console.log('isSizeChanged', isSizeChanged)
 
   return (
     <>

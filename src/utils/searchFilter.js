@@ -1,20 +1,15 @@
-const searchFilter = (request = '', filtercheckbox = false, moviesData) => {
+const searchFilter = (name = '', isShorts = false, movies) => {
 
-  // Фильтруем по тексту запроса.
-  const filterRequest = (movie) => {
-    return JSON.stringify(movie).toLocaleLowerCase().includes(request.toLowerCase())
-  }
+  return movies.filter((movie) => {
+    const isValidName = movie.nameRU.toLowerCase().includes(name.toLowerCase());
+    const isMovieShort = isShorts ? movie.duration <= 40 : true;
+    // console.log('isMovieShort', isMovieShort)
+    // console.log('movie.duration', movie.duration)
 
-  // Фильтруем по короткометражкам.
-  const filterShortfilm = (movie) => {
-    return movie.duration <= 40;
-  }
 
-  if (filtercheckbox) {
-    return moviesData.filter(filterShortfilm).filter(filterRequest);
-  } else {
-    return moviesData.filter(filterRequest);
-  }
+
+    return isValidName && isMovieShort;
+  })
 }
 
 export default searchFilter;

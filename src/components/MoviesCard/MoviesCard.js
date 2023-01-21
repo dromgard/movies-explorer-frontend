@@ -4,7 +4,6 @@ function MoviesCard({
   data,
   locationPathname,
   onSaveMovie,
-  onDeleteSavedMovie,
 }) {
 
   // Получаем постер фильма.
@@ -25,7 +24,8 @@ function MoviesCard({
     return `${renderHours} ${renderminutes}`;
   }
 
-  const [movieData, setMovieData] = useState({
+  const movieData = data.saved ? {
+    ...data,
     country: data.country || 'Нет данных',
     director: data.director || 'Нет данных',
     duration: data.duration || 0,
@@ -37,39 +37,51 @@ function MoviesCard({
     nameEN: data.nameEN || 'Нет данных',
     movieId: data.id,
     thumbnail: getImage(data.image.url),
-  })
+  } : {
+    country: data.country || 'Нет данных',
+    director: data.director || 'Нет данных',
+    duration: data.duration || 0,
+    year: data.year || 'Нет данных',
+    description: data.description || 'Нет данных',
+    image: getImage(data.image.url),
+    trailerLink: data.trailerLink,
+    nameRU: data.nameRU || 'Нет данных',
+    nameEN: data.nameEN || 'Нет данных',
+    movieId: data.id,
+    thumbnail: getImage(data.image.url),
+  };
 
-  const [isFavourite, setisFavourite] = useState(data.saved);
+  // const [movieData, setMovieData] = useState({
+  //   ...data,
+  //   country: data.country || 'Нет данных',
+  //   director: data.director || 'Нет данных',
+  //   duration: data.duration || 0,
+  //   year: data.year || 'Нет данных',
+  //   description: data.description || 'Нет данных',
+  //   image: getImage(data.image.url),
+  //   trailerLink: data.trailerLink,
+  //   nameRU: data.nameRU || 'Нет данных',
+  //   nameEN: data.nameEN || 'Нет данных',
+  //   movieId: data.id,
+  //   thumbnail: getImage(data.image.url),
+  // })
 
-  useEffect(() => {
-    if (locationPathname === '/saved-movies') {
-      setisFavourite(false);
-    } else if (locationPathname === '/movies') {
-      setisFavourite(data.saved ? false : true)
-    }
-  }, [data.saved, locationPathname])
+  // const [isFavourite, setisFavourite] = useState(movieData.saved);
+
+  // useEffect(() => {
+  //   if (locationPathname === '/saved-movies') {
+  //     setisFavourite(false);
+  //   } else if (locationPathname === '/movies') {
+  //     setisFavourite(data.saved ? false : true)
+  //   }
+  // }, [data.saved, locationPathname])
 
   // Обработчик сохранения и удаления фильмов из избранного.
   const handleClickFavoriteButton = () => {
-    // Если мы на странице "Фильмы"...
-    if (locationPathname === '/movies') {
-      // и фильм не в избранном, то сохраняем в избранное.
-      if (!data.saved) {
-        // console.log("Сохранили в избранное карточка", data.saved);
-        onSaveMovie(movieData);
-      } else {
-        // А если в избранном, то удаляем.
-
-        onDeleteSavedMovie(data.id);
-        // console.log("Удалили из избранного карточка", data.saved);
-      }
-      // Со страницы "Сохраненные фильмы" только удаляем из избранного.
-    } else if (locationPathname === '/saved-movies') {
-      onDeleteSavedMovie(data._id, data.movieId);
-    }
+    onSaveMovie(movieData);
   };
 
-  // console.log(data.nameRU, data.saved)
+  console.log("movieData", movieData)
 
   return (
     <article className="moviescard">
@@ -87,7 +99,7 @@ function MoviesCard({
       <div className="moviescard__container">
         <h2 className="moviescard__title">{movieData.nameRU || movieData.nameEN}</h2>
         <button
-          className={`${isFavourite ? "moviescard__favourites-add" : "moviescard__favourites-remove"} button`}
+          className={`${movieData.saved ? "moviescard__favourites-remove" : "moviescard__favourites-add"} button`}
           type="button"
           aria-label="Добавить в избранное"
           title="Добавить в избранное"
