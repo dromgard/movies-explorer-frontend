@@ -28,19 +28,24 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
   }, [currentUser]);
 
   function handleApiMessages() {
+    console.log("handleApiMessages")
     if (updateUserStatus) {
       switch (updateUserStatus) {
         case 200:
           setInfoMessage("Данные обновлены");
+          setIsFormValid(false);
           break;
         case 409:
           setInfoMessage("Пользователь с такой почтой уже существует");
+          setIsFormValid(false);
           break;
         case 500:
           setInfoMessage("Ошибка на сервере. Попробуйте позже")
+          setIsFormValid(false);
           break;
         default:
           setInfoMessage("Произошла ошибка. Попробуйте позже");
+          setIsFormValid(false);
           break;
       };
     };
@@ -49,7 +54,7 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
   // Запускаем обработку сообщений с сервера.
   useEffect(() => {
     handleApiMessages()
-  }, [updateUserStatus]);
+  }, [updateUserStatus, isEditDone]);
 
   function makeFinalValidation() {
     if (name === newName && email === newEmail) {
@@ -111,6 +116,7 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
 
   // Обработчик сохранения изменений.
   function handleUpdateUser(e) {
+    setIsEditDone(false);
     e.preventDefault();
 
     // Передаём значения управляемых компонентов во внешний обработчик

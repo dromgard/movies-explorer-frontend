@@ -185,7 +185,6 @@ function App() {
     mainApi
       .register(userEmail, userPassword, userName)
       .then((res) => {
-        // navigate("/signin");
         handleLogin(userEmail, userPassword)
         resetRegisterForm(true);
       })
