@@ -52,14 +52,13 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
   }, [updateUserStatus]);
 
   function makeFinalValidation() {
-    setIsEditDone(false);
-    if (name === newName || email === newEmail) {
-      setInfoMessage('Измените оба поля');
+    if (name === newName && email === newEmail) {
+      setInfoMessage('Внесите изменение в поле');
       setIsFormValid(false);
       return;
     }
 
-    if (!isNameValid || !isEmailValid) {
+    if (!isNameValid && !isEmailValid) {
       setInfoMessage('');
       setIsFormValid(false);
       return;
@@ -116,12 +115,11 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
 
     // Передаём значения управляемых компонентов во внешний обработчик
     onEditProfile(newName, newEmail, setIsEditDone);
-    console.log('Отправилось')
   }
 
   return (
     <section className="profile">
-      <h1 className="common-title">Привет, Сергей!</h1>
+      <h1 className="common-title">Привет, {name}</h1>
 
       <form className="profile-form" name="profile-form">
         <div className="profile-form__container">
