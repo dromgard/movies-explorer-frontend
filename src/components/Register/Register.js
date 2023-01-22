@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function Register({ handleRegister }) {
+function Register({ handleRegister, updateRegisterStatus }) {
 
   // States.
   const [name, setName] = useState("");
@@ -14,7 +14,28 @@ function Register({ handleRegister }) {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isRegisterError, setIsRegisterError] = useState(false);
+  const [infoMessage, setInfoMessage] = useState("");
+
+  function handleApiMessages() {
+    if (updateRegisterStatus) {
+      switch (updateRegisterStatus) {
+        case 409:
+          setInfoMessage("Пользователь с такой почтой уже существует");
+          break;
+        case 500:
+          setInfoMessage("Ошибка на сервере. Попробуйте позже")
+          break;
+        default:
+          setInfoMessage("Произошла ошибка. Попробуйте позже");
+          break;
+      };
+    };
+  }
+
+  // Запускаем обработку сообщений с сервера.
+  useEffect(() => {
+    handleApiMessages()
+  }, [updateRegisterStatus]);
 
   // Обработчики полей ввода имени, email и пароля.
   function handleChangeName(e) {
@@ -66,7 +87,6 @@ function Register({ handleRegister }) {
 
   // Финальная валидация отвечает за блокировку / разблокировку формы.
   function makeFinalValidation() {
-    setIsRegisterError(false);
     if (!isEmailValid || !isPasswordValid || !isNameValid) {
       setIsFormValid(false);
       return;
@@ -85,7 +105,7 @@ function Register({ handleRegister }) {
   // Обработка нажатия на кнопку "Регистрация".
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleRegister(email, password, name, resetForm, setIsRegisterError);
+    handleRegister(email, password, name, resetForm);
   }
 
   useEffect(() => {
@@ -142,7 +162,7 @@ function Register({ handleRegister }) {
         />
         <span className="auth-form__input-error">{inputPasswordError}</span>
 
-        <span className="auth-form__info-message">{isRegisterError && "Произошла ошибка! Попробуйте ещё раз."}</span>
+        <span className="auth-form__info-message">{infoMessage}</span>
 
         <button
           name="submit"

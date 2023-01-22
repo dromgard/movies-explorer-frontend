@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 function MoviesCard({
   data,
@@ -51,37 +51,11 @@ function MoviesCard({
     thumbnail: getImage(data.image.url),
   };
 
-  // const [movieData, setMovieData] = useState({
-  //   ...data,
-  //   country: data.country || 'Нет данных',
-  //   director: data.director || 'Нет данных',
-  //   duration: data.duration || 0,
-  //   year: data.year || 'Нет данных',
-  //   description: data.description || 'Нет данных',
-  //   image: getImage(data.image.url),
-  //   trailerLink: data.trailerLink,
-  //   nameRU: data.nameRU || 'Нет данных',
-  //   nameEN: data.nameEN || 'Нет данных',
-  //   movieId: data.id,
-  //   thumbnail: getImage(data.image.url),
-  // })
-
-  // const [isFavourite, setisFavourite] = useState(movieData.saved);
-
-  // useEffect(() => {
-  //   if (locationPathname === '/saved-movies') {
-  //     setisFavourite(false);
-  //   } else if (locationPathname === '/movies') {
-  //     setisFavourite(data.saved ? false : true)
-  //   }
-  // }, [data.saved, locationPathname])
-
   // Обработчик сохранения и удаления фильмов из избранного.
   const handleClickFavoriteButton = () => {
     onSaveMovie(movieData);
   };
 
-  console.log("movieData", movieData)
 
   return (
     <article className="moviescard">

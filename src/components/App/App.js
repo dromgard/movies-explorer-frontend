@@ -22,30 +22,25 @@ function App() {
   const [isPopupMenuOpen, setIsPopupMenuOpen] = useState(false);
 
   // States для пользователя.
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({ name: "", email: "" });
   const [loggedIn, setLoggedIn] = useState(true);
+
+  const [updateUserStatus, setUpdateUserStatus] = useState(false);
+  const [updateRegisterStatus, setUpdateRegisterStatus] = useState(false);
+  const [updateLoginStatus, setUpdateLoginStatus] = useState(false);
 
   // States для фильмов.
   const [isLoadingMoviesData, setIsLoadingMoviesData] = useState(false); // Идёт загрузка. Прелоадер.
+
+  const [isNeedUpdateCard, setIsNeedUpdateCard] = useState(false); // Факт необходимости обновления карточек.
 
   const [movies, setMovies] = useState([]); // Исходные фильмы из BitFilms.
   const [savedMovies, setSavedMovies] = useState([]); // Исходные фильмы из нашего API.
   const [filteredMovies, setFilteredMovies] = useState([]); // Отфильтрованные фильмы.
   const [filteredSavedMovies, setFilteredSavedMovies] = useState([]); // Отфильтрованные фильмы.
 
-
-  const [moviesData, setMoviesData] = useState([]); // Результат поиска на странице "Фильмы"
-  const [foundSavedMoviesData, setFoundSavedMoviesData] = useState([]); // Массив "Сохраненные Фильмы"
-  const [isNoSavedMoviesFound, setIsNoSavedMoviesFound] = useState(false); //Результат поиска на странице "Сохраненные Фильмы"
-
-  const [isNoMoviesFound, setIsNoMoviesFound] = useState(false); // Поиск фильма ничего не нашел "Фильмы".
-  const [isSavedMoviesEmpty, setIsSavedMoviesEmpty] = useState(false); // Поиск фильма ничего не нашел "Сохраненные Фильмы".
-
   const [isMoviesApiError, setIsMoviesApiError] = useState(false); // Ошибки АПИ после поиска "Фильмы".
   const [isFavouritesMoviesApiError, setIsFavouritesMoviesApiError] = useState(false); //Ошибки АПИ после поиска "Сохраненные Фильмы"
-
-  const [isFiltering, setIsFiltering] = useState(false);
-  const [needUpdate, setNeedUpdate] = useState(false);
 
   // Используем хук useLocation для отрисовки компонентов.
   const { pathname } = useLocation();
@@ -57,7 +52,7 @@ function App() {
 
   let navigate = useNavigate();
 
-
+  // Объединяем массивы для работы с оафками.
   const mergeMovies = (bitFilmsMovies, savedMovies) => {
     return bitFilmsMovies.map((movie) => {
       const savedMovie = savedMovies.find((movieSaved) => movieSaved.movieId === movie.id)
@@ -67,9 +62,9 @@ function App() {
     })
   }
 
-
+  // Поиск на странице "Фильмы".
   const filterMovies = (name, isShorts) => {
-    console.log("попали в filterMovies", name, isShorts);
+    setIsNeedUpdateCard(true);
     localStorage.setItem('search-name', name);
     localStorage.setItem('search-isShorts', JSON.stringify(isShorts));
 
@@ -87,14 +82,13 @@ function App() {
 
         Promise.all([moviesApi.getMoviesCards(), mainApi.getSavedMovies()])
           .then(([bitFilmsMovies, { data: savedMovies }]) => {
-            console.log("bitFilmsMovies", bitFilmsMovies)
-            console.log("savedMovies", savedMovies)
             const mergedMovies = mergeMovies(bitFilmsMovies, savedMovies)
             setIsMoviesApiError(false);
             setMovies(mergedMovies);
             filter(mergedMovies)
             // Сохраняем исходный массив фильмов в localStorage.
             localStorage.setItem('movies', JSON.stringify(mergedMovies));
+            setIsMoviesApiError(false);
           })
           .catch((err) => {
             console.log(err);
@@ -113,9 +107,9 @@ function App() {
     }
   }
 
-  // Сохраненки
+  // Поиск на странице "Сохраненные фильмы".
   const filterSavedMovies = (name, isShorts) => {
-    console.log("попали в filterMovies", name, isShorts);
+    setIsNeedUpdateCard(true);
     localStorage.setItem('search-name-saved', name);
     localStorage.setItem('search-isShorts-saved', JSON.stringify(isShorts));
 
@@ -137,15 +131,15 @@ function App() {
               return card;
             })
 
-            setIsMoviesApiError(false);
             setSavedMovies(cards);
             filter(cards)
             // Сохраняем исходный массив фильмов в localStorage.
             localStorage.setItem('saved-movies', JSON.stringify(cards));
+            setIsFavouritesMoviesApiError(false);
           })
           .catch((err) => {
             console.log(err);
-            setIsMoviesApiError(true);
+            setIsFavouritesMoviesApiError(true);
           })
           .finally(() => {
             setIsLoadingMoviesData(false);
@@ -159,9 +153,6 @@ function App() {
       filter(savedMovies);
     }
   }
-
-
-
 
   // Проверяем наличие токена в локальном хранилище, загружаем данные пользователя и карточки.
   const tokenCheck = () => {
@@ -190,7 +181,7 @@ function App() {
   };
 
   // Обработчик логина.
-  const handleLogin = (userEmail, userPassword, resetLoginForm, setIsLoginError) => {
+  const handleLogin = (userEmail, userPassword, resetLoginForm) => {
     if (!userEmail || !userPassword) {
       return;
     }
@@ -205,13 +196,13 @@ function App() {
         }
       })
       .catch((err) => {
-        setIsLoginError(true)
+        setUpdateLoginStatus(err);
         console.log(err);
       });
   };
 
   // Обработчик регистрации.
-  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm, setIsRegisterError) => {
+  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm) => {
     mainApi
       .register(userEmail, userPassword, userName)
       .then((res) => {
@@ -219,7 +210,7 @@ function App() {
         resetRegisterForm(true);
       })
       .catch((err) => {
-        setIsRegisterError()
+        setUpdateRegisterStatus(err);
       });
   };
 
@@ -227,24 +218,25 @@ function App() {
   const handleLogout = () => {
     localStorage.clear();
     setCurrentUser({});
-    setMoviesData([]);
-    setFoundSavedMoviesData([]);
+    setMovies([]);
+    setSavedMovies([]);
     navigate("/signin");
     setLoggedIn(false);
   };
 
 
   // Обработчик сохранения данных пользователя.
-  function handleUpdateUser(name, email, setTextError, setIsEditDone) {
+  function handleUpdateUser(name, email, setIsEditDone) {
     mainApi
       .editUserInfo(name, email)
       .then((userData) => {
         setCurrentUser(userData.data);
         setIsEditDone(true);
+        setUpdateUserStatus(200);
       })
       .catch((err) => {
-        setTextError(`Ошибка обновления данных пользователя: ${err}`)
-        console.log(`Ошибка обновления данных пользователя: ${err}`);
+        setIsEditDone(false);
+        setUpdateUserStatus(err);
       });
   }
 
@@ -263,185 +255,15 @@ function App() {
     setIsPopupMenuOpen(!isPopupMenuOpen);
   };
 
-  // Поиск и фильтрация фильмов на странице "Фильмы".
-  const handleSearchMovies = (request, filtercheckbox) => {
-    // 1 этап. Выполняем поиск фильмов и сохраняем данные в localStorage.
-    setIsLoadingMoviesData(true);
-    localStorage.setItem("request", request);
-    localStorage.setItem("filtercheckbox", filtercheckbox);
-
-    moviesApi.getMoviesCards()
-      .then((res) => {
-        setIsMoviesApiError(false);
-
-        // Сохраняем исходный массив фильмов в localStorage.
-        localStorage.setItem('movies', JSON.stringify(res));
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsMoviesApiError(true);
-      })
-      .finally(() => {
-        setIsLoadingMoviesData(false);
-      })
-
-    // 2 этап. Фильтрация и сохранение массива фильмов в localStorage.
-    const localMoviesData = JSON.parse(localStorage.getItem('movies'));
-    if (localMoviesData) {
-      const filteredMovies = searchFilter(request, filtercheckbox, localMoviesData);
-
-      // Устанавливаем статус результатов фильтра.
-      if (filteredMovies.length === 0) {
-        setIsNoMoviesFound(true);
-      } else {
-        setIsNoMoviesFound(false);
-      }
-
-      // Сохраняем фильтрованный массив фильмов в localStorage.
-      localStorage.setItem('filtered-movies', JSON.stringify(filteredMovies));
-
-      // Сохраняем фильтрованный массив фильмов в state.
-      setMoviesData(filteredMovies);
-    }
-  };
-
-  // Загрузка всех сохраненных фильмов с Api.
-  const loadSavedMoviesData = () => {
-    mainApi.getSavedMovies()
-      .then((res) => {
-        setIsFavouritesMoviesApiError(false);
-
-        if (res.data.length === 0) {
-          setIsSavedMoviesEmpty(true);
-          setFoundSavedMoviesData(res.data);
-          return;
-        } else {
-          setIsSavedMoviesEmpty(false);
-          setFoundSavedMoviesData(res.data.reverse());
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsFavouritesMoviesApiError(true);
-      })
-
-  }
-
-  // Поиск фильмов на странице "Сохраненные фильмы".
-  const handleSearchSavedMovies = async (request, filtercheckbox) => {
-    localStorage.setItem("fav-request", request);
-    localStorage.setItem("fav-filtercheckbox", filtercheckbox);
-    setIsLoadingMoviesData(true);
-    await mainApi.getSavedMovies()
-      .then((res) => {
-        setIsFavouritesMoviesApiError(false);
-        if (res.data.length === 0) {
-          setIsSavedMoviesEmpty(true);
-          setFoundSavedMoviesData(res.data);
-          return;
-        } else {
-          const filteredSavedMovies = searchFilter(request, filtercheckbox, res.data);
-
-          if (filteredSavedMovies.length === 0) {
-            setIsNoSavedMoviesFound(true);
-          } else {
-            setIsNoSavedMoviesFound(false);
-          }
-          setIsFiltering(true);
-          setNeedUpdate(false);
-          setFoundSavedMoviesData(filteredSavedMovies)
-          setIsSavedMoviesEmpty(false);
-
-        }
-      })
-      .catch((err) => {
-        setIsFavouritesMoviesApiError(true);
-      })
-      .finally(() => {
-        setIsLoadingMoviesData(false);
-      })
-
-
-
-  }
-
   // Проверка на логин при загрузке страницы.
   useEffect(() => {
     tokenCheck();
   }, [loggedIn]);
 
 
-
-  // Управляем лайками в локал localStorage.
-  const toggleFavouritesMoviesInLocal = (id) => {
-    console.log("2-управляем лайками в локал")
-    // Получаем текущий массив сохраненок.
-    const filteredMovies = JSON.parse(localStorage.getItem('filtered-movies'));
-
-    // Находим фильм с нужным id и ставим/удаляем лайк.
-    filteredMovies.forEach((foundMovie) => {
-      if (foundMovie.id === id) {
-        console.log("3-нашли фильм в локал")
-        // Нашли фильм и проверяем стоит ли лайк
-        if (foundMovie.saved) {
-          console.log("4-удалили лайк в локал")
-          foundMovie.saved = false
-        } else {
-          console.log("4-поставили лайк в локал")
-          foundMovie.saved = true
-        }
-      }
-    })
-
-    // Сохраняем новый массив в localStorage.
-    localStorage.setItem('filtered-movies', JSON.stringify(filteredMovies));
-    setMoviesData(filteredMovies);
-  }
-
-
-  // Загружаем фильмы с сервера для удаления из избранного.
-  const getSavedMoviesForPageMovies = () => {
-    return mainApi.getSavedMovies()
-      .then((res) => {
-        setIsFavouritesMoviesApiError(false);
-        return res.data;
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsFavouritesMoviesApiError(true);
-      })
-  }
-
-
-  // Обработчик удаления фильма из избранного со страницы "Фильмы".
-  const deleteSavedMovieForPageMovies = async (id) => {
-
-    const savedMovies = await getSavedMoviesForPageMovies();
-
-    let serverId = "";
-
-    savedMovies.forEach((foundMovie) => {
-      if (foundMovie.movieId === id) {
-        serverId = foundMovie._id
-      }
-    })
-
-    mainApi.deleteSavedMovie(serverId)
-      .then((res) => {
-
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        toggleFavouritesMoviesInLocal(id)
-      })
-  }
-
-  // Обработчик сохранения фильма в избранное со страницы "Фильмы".
+  // Обработчик добавления и удаления лайков. Для обеих страниц.
   const handleSaveFavoriteMovie = (card) => {
-
-    console.log("card", card)
+    setIsNeedUpdateCard(true);
     const promise = card.saved ? mainApi.deleteSavedMovie(card._id) : mainApi.saveMovie(card)
 
     promise
@@ -451,7 +273,6 @@ function App() {
           card.saved = true;
           return card;
         })
-
         localStorage.setItem('saved-movies', JSON.stringify(cards));
         setSavedMovies(() => cards);
 
@@ -465,41 +286,25 @@ function App() {
         localStorage.setItem('movies', JSON.stringify(mergedMovies));
 
       })
-  };
-
-
-  useEffect(() => {
-    const savedSearchName = localStorage.getItem("search-name-saved") || "";
-    const savedSearchShorts = (localStorage.getItem("search-isShorts-saved") === "true") ? true : false;
-
-    filterSavedMovies(savedSearchName, savedSearchShorts)
-  }, [savedMovies.length])
-
-
-  // Обработчик удаления фильма из избранного со страницы "Сохраненное".
-  const handleDeleteSavedMovie = (serverId, localId) => {
-    console.log("1-saved-удаление лайка")
-    mainApi.deleteSavedMovie(serverId) // Удяляем фильм из БД.
-      .then((res) => {
-        // toggleFavouritesMoviesInLocal(localId); // Удаляем лайки из localstorage.
-        console.log("5-saved-удалили лайк из БД")
-        foundSavedMoviesData.forEach((item, index) => { // Удаляем фильм из массива "Сохраненные фильмы".
-          if (item._id === serverId) {
-            console.log("6-saved-нашли фильм в стэйте и удалили")
-            delete foundSavedMoviesData[index];
-            setFoundSavedMoviesData(foundSavedMoviesData);
-          }
-
-        });
-        setNeedUpdate(true);
-        console.log("NeedUpdate", needUpdate)
-        setIsFiltering(false);
-        console.log("IsFiltering", isFiltering)
-      })
       .catch((err) => {
         console.log(err);
       })
-  }
+  };
+
+  useEffect(() => {
+
+    if (isNeedUpdateCard) {
+      const savedSearchName = localStorage.getItem("search-name-saved") || "";
+      const savedSearchShorts = (localStorage.getItem("search-isShorts-saved") === "true") ? true : false;
+
+      filterSavedMovies(savedSearchName, savedSearchShorts)
+
+      setIsNeedUpdateCard(false);
+    }
+
+
+
+  }, [savedMovies.length])
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -513,10 +318,8 @@ function App() {
             <ProtectedRoute loggedIn={loggedIn}>
               <Movies
                 filterMovies={filterMovies}
-                isNoMoviesFound={isNoMoviesFound}
                 isLoadingData={isLoadingMoviesData}
                 isMoviesApiError={isMoviesApiError}
-                onSubmit={handleSearchMovies}
                 moviesData={filteredMovies}
                 onSaveMovie={handleSaveFavoriteMovie}
               />
@@ -526,12 +329,7 @@ function App() {
           <Route path='/saved-movies' element={
             <ProtectedRoute loggedIn={loggedIn}>
               <SavedMovies
-                needUpdate={needUpdate}
-                isFiltering={isFiltering}
-                loadSavedMoviesData={loadSavedMoviesData}
-                isSavedMoviesEmpty={isSavedMoviesEmpty}
                 isLoadingData={isLoadingMoviesData}
-                isNoSavedMoviesFound={isNoSavedMoviesFound}
                 savedMovies={filteredSavedMovies}
                 handleSearchSavedMovies={filterSavedMovies}
                 onSaveMovie={handleSaveFavoriteMovie}
@@ -542,13 +340,13 @@ function App() {
           </Route>
           <Route path='/profile' element={
             <ProtectedRoute loggedIn={loggedIn}>
-              <Profile onEditProfile={handleUpdateUser} handleLogout={handleLogout} />
+              <Profile onEditProfile={handleUpdateUser} handleLogout={handleLogout} updateUserStatus={updateUserStatus} />
             </ProtectedRoute>
           }>
           </Route>
-          <Route path='/signup' element={<Register handleRegister={handleRegister} />}>
+          <Route path='/signup' element={<Register handleRegister={handleRegister} updateRegisterStatus={updateRegisterStatus} />}>
           </Route>
-          <Route path='/signin' element={<Login handleLogin={handleLogin} />}>
+          <Route path='/signin' element={<Login handleLogin={handleLogin} updateLoginStatus={updateLoginStatus} />}>
           </Route>
           <Route path="*" element={<NotFound />}>
           </Route>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-function Profile({ onEditProfile, handleLogout }) {
+function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
 
   // Получаем данные текущего пользователя.
   const currentUser = useContext(CurrentUserContext);
@@ -11,7 +11,7 @@ function Profile({ onEditProfile, handleLogout }) {
   const [email, setEmail] = useState("");
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [textError, setTextError] = useState("");
+  const [infoMessage, setInfoMessage] = useState("");
   const [isEditDone, setIsEditDone] = useState(false);
   const [inputNameError, setInputNameError] = useState("");
   const [inputEmailError, setInputEmailError] = useState("");
@@ -27,16 +27,40 @@ function Profile({ onEditProfile, handleLogout }) {
     setNewEmail(currentUser.email);
   }, [currentUser]);
 
+  function handleApiMessages() {
+    if (updateUserStatus) {
+      switch (updateUserStatus) {
+        case 200:
+          setInfoMessage("Данные обновлены");
+          break;
+        case 409:
+          setInfoMessage("Пользователь с такой почтой уже существует");
+          break;
+        case 500:
+          setInfoMessage("Ошибка на сервере. Попробуйте позже")
+          break;
+        default:
+          setInfoMessage("Произошла ошибка. Попробуйте позже");
+          break;
+      };
+    };
+  }
+
+  // Запускаем обработку сообщений с сервера.
+  useEffect(() => {
+    handleApiMessages()
+  }, [updateUserStatus]);
+
   function makeFinalValidation() {
     setIsEditDone(false);
     if (name === newName || email === newEmail) {
-      setTextError('Измените оба поля');
+      setInfoMessage('Измените оба поля');
       setIsFormValid(false);
       return;
     }
 
     if (!isNameValid || !isEmailValid) {
-      setTextError('');
+      setInfoMessage('');
       setIsFormValid(false);
       return;
     }
@@ -48,7 +72,7 @@ function Profile({ onEditProfile, handleLogout }) {
   function handleChangeName(e) {
     let inputValue = e.target.value;
     setNewName(inputValue);
-    setTextError("");
+    setInfoMessage("");
     const nameRegex = /^[а-яА-ЯёЁa-zA-Z -]+$/g
 
     if (inputValue.length < 2 || inputValue.length > 30) {
@@ -66,7 +90,7 @@ function Profile({ onEditProfile, handleLogout }) {
   function handleChangeEmail(e) {
     let inputValue = e.target.value;
     setNewEmail(inputValue);
-    setTextError("");
+    setInfoMessage("");
 
     const emailRegex = /^([\w]+@([\w-]+\.)+[\w-]{2,4})?$/;
     if (inputValue.length === 0) {
@@ -91,10 +115,9 @@ function Profile({ onEditProfile, handleLogout }) {
     e.preventDefault();
 
     // Передаём значения управляемых компонентов во внешний обработчик
-    onEditProfile(newName, newEmail, setTextError, setIsEditDone);
+    onEditProfile(newName, newEmail, setIsEditDone);
     console.log('Отправилось')
   }
-
 
   return (
     <section className="profile">
@@ -135,7 +158,7 @@ function Profile({ onEditProfile, handleLogout }) {
           </div>
           <span className="auth-form__input-error">{inputEmailError}</span>
         </div>
-        <span className={`profile-form__info-message ${isEditDone ? "profile-form__info-message_positive" : ""}`}>{textError || (isEditDone && "Данные обновлены")}</span>
+        <span className={`profile-form__info-message ${isEditDone ? "profile-form__info-message_positive" : ""}`}>{infoMessage}</span>
         <button
           className={`profile-form__submit button ${isFormValid ? "" : "profile-form__submit_inactive"}`}
           type="submit"

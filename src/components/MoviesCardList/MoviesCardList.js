@@ -6,7 +6,6 @@ function MoviesCardList({
   locationPathname,
   data,
   onSaveMovie,
-  onDeleteSavedMovie,
 }) {
 
   const size = useCurrentSize();

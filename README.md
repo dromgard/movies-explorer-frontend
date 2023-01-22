@@ -1,6 +1,10 @@
 ## Макет
 
-[Макет сайта](https://disk.yandex.ru/d/l-wlrA_LI5JmaQ)
+[Макет сайта - https://disk.yandex.ru/d/l-wlrA_LI5JmaQ](https://disk.yandex.ru/d/l-wlrA_LI5JmaQ)
+
+[Макет сайта - https://serhio-diploma.nomoredomains.rocks/](https://serhio-diploma.nomoredomains.rocks/)
+
+[Пул-реквест - ]()
 
 ## Запуск проекта
 

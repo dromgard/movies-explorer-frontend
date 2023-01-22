@@ -243,6 +243,10 @@
   color: #ff004c;
 }
 
+.auth-form__info-message_positive {
+  color: #007700;
+}
+
 .auth-form__info-message_login {
   margin: 124px 0 20px;
 }

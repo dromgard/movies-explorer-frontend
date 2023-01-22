@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function Login({ handleLogin }) {
+function Login({ handleLogin, updateLoginStatus }) {
 
   // States.
   const [email, setEmail] = useState("");
@@ -11,7 +11,29 @@ function Login({ handleLogin }) {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isLoginError, setIsLoginError] = useState(false);
+  const [infoMessage, setInfoMessage] = useState("");
+
+  function handleApiMessages() {
+    if (updateLoginStatus) {
+      switch (updateLoginStatus) {
+        case 400:
+        case 401:
+          setInfoMessage("Неправильный логин или пароль");
+          break;
+        case 500:
+          setInfoMessage("Ошибка на сервере. Попробуйте позже")
+          break;
+        default:
+          setInfoMessage("Произошла ошибка. Попробуйте позже");
+          break;
+      };
+    };
+  }
+
+  // Запускаем обработку сообщений с сервера.
+  useEffect(() => {
+    handleApiMessages()
+  }, [updateLoginStatus]);
 
   // Сброс формы.
   const resetForm = () => {
@@ -22,12 +44,11 @@ function Login({ handleLogin }) {
   // Обработка нажатия на кнопку "Войти".
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleLogin(email, password, resetForm, setIsLoginError);
+    handleLogin(email, password, resetForm);
   }
 
   // Финальная валидация отвечает за блокировку / разблокировку формы.
   function makeFinalValidation() {
-    setIsLoginError(false);
     if (!isEmailValid || !isPasswordValid) {
       setIsFormValid(false);
       return;
@@ -108,7 +129,7 @@ function Login({ handleLogin }) {
           required
         />
         <span className="auth-form__input-error">{inputPasswordError}</span>
-        <span className="auth-form__info-message auth-form__info-message_login">{isLoginError && "Произошла ошибка! Попробуйте ещё раз."}</span>
+        <span className="auth-form__info-message auth-form__info-message_login">{infoMessage}</span>
 
         <button
           name="submit"

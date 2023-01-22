@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import Preloader from "../Preloader/Preloader";
@@ -9,10 +9,7 @@ function Movies({
   isLoadingData,
   isMoviesApiError,
   moviesData,
-  onSubmit,
   onSaveMovie,
-  onDeleteSavedMovie,
-  isNoMoviesFound,
 }) {
 
   let location = useLocation();
@@ -22,23 +19,14 @@ function Movies({
 
   // Обработчик кнопки "Поиск".
   const handleSubmit = (name, isShorts) => {
-    console.log("попали в handleSubmit");
     filterMovies(name, isShorts);
   }
-
-  // Проверяем есть ли в массиве фильмы - если нет, грузим из локалки.
-  // const getPreviousSearchMovies = (moviesData) => {
-  //   if (moviesData.length === 0) {
-  //     return JSON.parse(localStorage.getItem('filtered-movies'));
-  //   }
-  //   return moviesData;
-  // }
 
   return (
     <>
       <SearchForm onSubmit={handleSubmit} savedSearchName={savedSearchName} savedSearchShorts={savedSearchShorts} />
-      {!isLoadingData && isNoMoviesFound && (
-        <span className="section-text section-text_movies">Ничего не нашли.</span>
+      {!isLoadingData && moviesData.length === 0 && (
+        <span className="section-text section-text_movies">Ничего не найдено.</span>
       )}
       {isLoadingData && (
         <Preloader />
