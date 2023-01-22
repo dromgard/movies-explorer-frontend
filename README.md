@@ -4,7 +4,7 @@
 
 [Макет сайта - https://serhio-diploma.nomoredomains.rocks/](https://serhio-diploma.nomoredomains.rocks/)
 
-[Пул-реквест - ]()
+[Пул-реквест - https://github.com/dromgard/movies-explorer-frontend/pull/16 ](https://github.com/dromgard/movies-explorer-frontend/pull/16)
 
 ## Запуск проекта
 
