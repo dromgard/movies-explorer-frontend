@@ -180,6 +180,21 @@ function App() {
     }
   };
 
+  // Обработчик регистрации.
+  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm) => {
+    mainApi
+      .register(userEmail, userPassword, userName)
+      .then((res) => {
+        // navigate("/signin");
+        handleLogin(userEmail, userPassword)
+        resetRegisterForm(true);
+      })
+      .catch((err) => {
+        setUpdateRegisterStatus(err);
+      });
+  };
+
+
   // Обработчик логина.
   const handleLogin = (userEmail, userPassword, resetLoginForm) => {
     if (!userEmail || !userPassword) {
@@ -192,25 +207,12 @@ function App() {
           localStorage.setItem("jwt", data.token);
           setLoggedIn(true);
           navigate("/movies");
-          resetLoginForm();
+          resetLoginForm && resetLoginForm();
         }
       })
       .catch((err) => {
         setUpdateLoginStatus(err);
         console.log(err);
-      });
-  };
-
-  // Обработчик регистрации.
-  const handleRegister = (userEmail, userPassword, userName, resetRegisterForm) => {
-    mainApi
-      .register(userEmail, userPassword, userName)
-      .then((res) => {
-        navigate("/signin");
-        resetRegisterForm(true);
-      })
-      .catch((err) => {
-        setUpdateRegisterStatus(err);
       });
   };
 

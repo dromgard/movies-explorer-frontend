@@ -169,7 +169,7 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
         >Редактировать</button>
         <button
           className="profile-form__submit profile-form__submit_exit button"
-          type="submit"
+          type="button"
           title="Выйти из аккаунта"
           aria-label="Выйти из аккаунта"
           onClick={handleLogout}
