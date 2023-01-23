@@ -73,7 +73,7 @@ function MoviesCard({
       <div className="moviescard__container">
         <h2 className="moviescard__title">{movieData.nameRU || movieData.nameEN}</h2>
         <button
-          className={`${movieData.saved ? "moviescard__favourites-remove" : "moviescard__favourites-add"} button`}
+          className={`${movieData.saved ? "moviescard__favourites-remove" : "moviescard__favourites-add"} ${locationPathname === "/saved-movies" ? "moviescard__favourites-remove-saved-movies" : ""} button`}
           type="button"
           aria-label="Добавить в избранное"
           title="Добавить в избранное"

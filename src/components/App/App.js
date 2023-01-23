@@ -36,8 +36,8 @@ function App() {
 
   const [movies, setMovies] = useState([]); // Исходные фильмы из BitFilms.
   const [savedMovies, setSavedMovies] = useState([]); // Исходные фильмы из нашего API.
-  const [filteredMovies, setFilteredMovies] = useState([]); // Отфильтрованные фильмы.
-  const [filteredSavedMovies, setFilteredSavedMovies] = useState([]); // Отфильтрованные фильмы.
+  const [filteredMovies, setFilteredMovies] = useState([]); // Отфильтрованные фильмы страница "Фильмы".
+  const [filteredSavedMovies, setFilteredSavedMovies] = useState([]); // Отфильтрованные фильмы страница "Сохраненные фильмы".
 
   const [isMoviesApiError, setIsMoviesApiError] = useState(false); // Ошибки АПИ после поиска "Фильмы".
   const [isFavouritesMoviesApiError, setIsFavouritesMoviesApiError] = useState(false); //Ошибки АПИ после поиска "Сохраненные Фильмы"
@@ -110,8 +110,6 @@ function App() {
   // Поиск на странице "Сохраненные фильмы".
   const filterSavedMovies = (name, isShorts) => {
     setIsNeedUpdateCard(true);
-    localStorage.setItem('search-name-saved', name);
-    localStorage.setItem('search-isShorts-saved', JSON.stringify(isShorts));
 
     const filter = (films) => {
       const filteredFilms = searchFilter(name, isShorts, films);
@@ -164,7 +162,6 @@ function App() {
           if (userData) {
             setCurrentUser(userData.user);
             setLoggedIn(true);
-            // navigate("/movies");
           } else {
             setLoggedIn(false);
             navigate("/");
@@ -176,7 +173,6 @@ function App() {
         });
     } else {
       setLoggedIn(false);
-      navigate("/");
     }
   };
 
@@ -295,16 +291,12 @@ function App() {
   useEffect(() => {
 
     if (isNeedUpdateCard) {
-      const savedSearchName = localStorage.getItem("search-name-saved") || "";
-      const savedSearchShorts = (localStorage.getItem("search-isShorts-saved") === "true") ? true : false;
-
-      filterSavedMovies(savedSearchName, savedSearchShorts)
+      filterSavedMovies("", false)
 
       setIsNeedUpdateCard(false);
     }
 
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedMovies.length])
 
   return (
@@ -345,9 +337,19 @@ function App() {
             </ProtectedRoute>
           }>
           </Route>
-          <Route path='/signup' element={<Register handleRegister={handleRegister} updateRegisterStatus={updateRegisterStatus} />}>
+
+          <Route path='/signup' element={
+            <ProtectedRoute loggedIn={!loggedIn}>
+              <Register handleRegister={handleRegister} updateRegisterStatus={updateRegisterStatus} />
+            </ProtectedRoute>
+          }>
           </Route>
-          <Route path='/signin' element={<Login handleLogin={handleLogin} updateLoginStatus={updateLoginStatus} />}>
+
+          <Route path='/signin' element={
+            <ProtectedRoute loggedIn={!loggedIn}>
+              <Login handleLogin={handleLogin} updateLoginStatus={updateLoginStatus} />
+            </ProtectedRoute>
+          }>
           </Route>
           <Route path="*" element={<NotFound />}>
           </Route>

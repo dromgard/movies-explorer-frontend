@@ -46,6 +46,14 @@
   border-radius: 50px;
 }
 
+.moviescard__favourites-remove-saved-movies {
+  width: 16px;
+  height: 16px;
+  background: url(../../images/moviescard-favourites-remove.svg);
+  background-size: cover;
+  box-shadow: none;
+}
+
 .moviescard__favourites-add {
   width: 16px;
   height: 16px;

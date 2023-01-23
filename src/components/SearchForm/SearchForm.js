@@ -3,7 +3,7 @@ import FilterCheckbox from "../FilterCheckbox/FilterCheckbox";
 import searchButtonLine from "../../images/search-button-line.svg"
 import searchButtonArrow from "../../images/search-button-arrow.svg"
 
-function SearchForm({ onSubmit, savedSearchName, savedSearchShorts }) {
+function SearchForm({ onSubmit, savedSearchName, savedSearchShorts, locationPathname }) {
   // States.
   const [searchName, setSearchName] = useState(savedSearchName); // Последний запрос из сохраненок.
   const [searchShorts, setSearchShorts] = useState(savedSearchShorts); // Последний чекбокс из сохраненок.
@@ -25,11 +25,12 @@ function SearchForm({ onSubmit, savedSearchName, savedSearchShorts }) {
     e.preventDefault();
 
     // Проверяем не пустой ли запрос.
-    if (searchName.length === 0) {
-      setIsRequestEmpty(true)
+    if (locationPathname === "/movies" && searchName.length === 0) {
+      setIsRequestEmpty(true);
       return
     }
 
+    setIsRequestEmpty(false);
     onSubmit(searchName, searchShorts);
   }
 

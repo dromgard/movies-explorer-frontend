@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import Preloader from "../Preloader/Preloader";
@@ -14,17 +14,28 @@ function Movies({
 
   let location = useLocation();
 
+  // const savedSearchedMovies = JSON.parse(localStorage.getItem("page-movies-saved") || []);
   const savedSearchName = localStorage.getItem("search-name") || "";
   const savedSearchShorts = (localStorage.getItem("search-isShorts") === "true") ? true : false;
 
   // Обработчик кнопки "Поиск".
   const handleSubmit = (name, isShorts) => {
+    // setFirstLoad(false)
     filterMovies(name, isShorts);
   }
 
+  useEffect(() => {
+    const localMovies = JSON.parse(localStorage.getItem('movies') || "[]");
+
+    if (localMovies.length > 0) {
+      filterMovies(savedSearchName, savedSearchShorts);
+    }
+
+  }, []);
+
   return (
     <>
-      <SearchForm onSubmit={handleSubmit} savedSearchName={savedSearchName} savedSearchShorts={savedSearchShorts} />
+      <SearchForm onSubmit={handleSubmit} savedSearchName={savedSearchName} savedSearchShorts={savedSearchShorts} locationPathname={location.pathname} />
       {!isLoadingData && moviesData.length === 0 && (
         <span className="section-text section-text_movies">Ничего не найдено.</span>
       )}
