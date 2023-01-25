@@ -102,11 +102,11 @@
 
 .auth {
   max-width: 396px;
-  margin: 70px auto;
+  margin: 40px auto;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 30px;
   align-items: flex-start;
 }
 
@@ -127,6 +127,10 @@
   font-size: 10px;
   line-height: 12px;
   color: #a0a0a0;
+}
+
+.auth-form__label_ask-only {
+  margin: 0 auto;
 }
 
 .auth-form__input {
@@ -208,11 +212,8 @@
 
 .auth-form__submit_inactive {
   background: #f8f8f8;
+  color: #c2c2c2;
 }
-
-/* .auth-form__submit_login {
-  margin: 158px 0 0 0;
-} */
 
 .auth-form__text {
   margin: 16px 0 0;
@@ -231,7 +232,7 @@
 }
 
 .auth-form__info-message {
-  margin: 37px 0 20px;
+  margin: 35px 0 20px;
   padding: 0;
   height: 14px;
   font-family: "Inter", Arial, sans-serif;
@@ -262,7 +263,9 @@
   }
 
   .auth {
-    margin: 232px auto 0;
+    margin: 0 auto;
+    height: 100vh;
+    justify-content: center;
   }
 }
 
@@ -284,8 +287,6 @@
 
   .auth {
     max-width: 260px;
-    margin: 56px auto 0;
-    gap: 50px;
     align-items: center;
   }
 
@@ -305,10 +306,10 @@
   }
 
   .auth-form__info-message {
-    margin: 126px 0 20px;
+    margin: 26px 0 20px;
   }
 
   .auth-form__info-message_login {
-    margin: 214px 0 20px;
+    margin: 114px 0 20px;
   }
 }

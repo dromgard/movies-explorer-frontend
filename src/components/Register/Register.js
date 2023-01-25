@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toAskOnlyData } from "../../utils/constants";
 
-function Register({ handleRegister, updateRegisterStatus }) {
+function Register({ handleRegister, updateRegisterStatus, handleLogin }) {
 
   // States.
   const [name, setName] = useState("");
@@ -108,6 +109,12 @@ function Register({ handleRegister, updateRegisterStatus }) {
     handleRegister(email, password, name, resetForm);
   }
 
+  // Обработка нажатия на кнопку "Мне только спросить".
+  const handleIWantToAskOnly = (e) => {
+    e.preventDefault();
+    handleLogin(toAskOnlyData.email, toAskOnlyData.password, resetForm);
+  }
+
   useEffect(() => {
     makeFinalValidation();
   }, [email, password, isNameValid])
@@ -183,6 +190,18 @@ function Register({ handleRegister, updateRegisterStatus }) {
         </p>
       </form>
 
+
+      <label className="auth-form__label auth-form__label_ask-only">Или</label>
+      <button
+        name="submit"
+        className="auth-form__submit button"
+        type="buttom"
+        aria-label="Мне только спросить"
+        title="Мне только спросить"
+        onClick={handleIWantToAskOnly}
+      >
+        Мне только спросить
+      </button>
     </section>
   );
 }

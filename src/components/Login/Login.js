@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toAskOnlyData } from "../../utils/constants";
 
 function Login({ handleLogin, updateLoginStatus }) {
 
@@ -45,6 +46,12 @@ function Login({ handleLogin, updateLoginStatus }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleLogin(email, password, resetForm);
+  }
+
+  // Обработка нажатия на кнопку "Мне только спросить".
+  const handleIWantToAskOnly = (e) => {
+    e.preventDefault();
+    handleLogin(toAskOnlyData.email, toAskOnlyData.password, resetForm);
   }
 
   // Финальная валидация отвечает за блокировку / разблокировку формы.
@@ -149,6 +156,18 @@ function Login({ handleLogin, updateLoginStatus }) {
           </Link>
         </p>
       </form>
+
+      <label className="auth-form__label auth-form__label_ask-only">Или</label>
+      <button
+        name="submit"
+        className="auth-form__submit button"
+        type="buttom"
+        aria-label="Мне только спросить"
+        title="Мне только спросить"
+        onClick={handleIWantToAskOnly}
+      >
+        Мне только спросить
+      </button>
 
     </section>
   );

@@ -182,7 +182,7 @@ function App() {
       .register(userEmail, userPassword, userName)
       .then((res) => {
         handleLogin(userEmail, userPassword)
-        resetRegisterForm(true);
+        resetRegisterForm && resetRegisterForm();
       })
       .catch((err) => {
         setUpdateRegisterStatus(err);
@@ -340,7 +340,7 @@ function App() {
 
           <Route path='/signup' element={
             <ProtectedRoute loggedIn={!loggedIn}>
-              <Register handleRegister={handleRegister} updateRegisterStatus={updateRegisterStatus} />
+              <Register handleRegister={handleRegister} handleLogin={handleLogin} updateRegisterStatus={updateRegisterStatus} />
             </ProtectedRoute>
           }>
           </Route>

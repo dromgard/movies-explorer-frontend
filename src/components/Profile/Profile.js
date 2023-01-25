@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { toAskOnlyData } from "../../utils/constants";
 
 function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
 
@@ -28,7 +29,6 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
   }, [currentUser]);
 
   function handleApiMessages() {
-    console.log("handleApiMessages")
     if (updateUserStatus) {
       switch (updateUserStatus) {
         case 200:
@@ -116,8 +116,18 @@ function Profile({ onEditProfile, handleLogout, updateUserStatus }) {
 
   // Обработчик сохранения изменений.
   function handleUpdateUser(e) {
-    setIsEditDone(false);
     e.preventDefault();
+    setIsEditDone(false);
+
+    // Обработка смены данных пользователя "Мне только спросить".
+    if (email === toAskOnlyData.email) {
+      setInfoMessage("Ты же сказал тебе только спросить")
+      setTimeout(() => {
+        setNewName(currentUser.name);
+        setNewEmail(currentUser.email);
+      }, 3000)
+      return;
+    }
 
     // Передаём значения управляемых компонентов во внешний обработчик
     onEditProfile(newName, newEmail, setIsEditDone);
